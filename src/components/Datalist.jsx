@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { ListItemText, ListItemButton, Avatar, ListItemAvatar, IconButton, ListItem } from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
-const Datalist = ({data}) => {
+const Datalist = ({data, type='data'}) => {
     return(
         <ListItemButton
-            href={'/data/'+ data.id}
+            href={'/'+type+'/'+ data.id}
             sx={{
                 borderBottom:2,
                 borderColor:'primary.main'
@@ -26,7 +28,11 @@ const Datalist = ({data}) => {
             >   
                 <ListItemAvatar>
                     <Avatar>
-                        <FolderIcon />
+                        {
+                            type==='ahp'
+                            ? <AccountTreeIcon />
+                            : <FolderIcon />
+                        }
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText
