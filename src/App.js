@@ -5,11 +5,9 @@ import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Topbar from './components/Topbar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -20,6 +18,7 @@ import Data from './pages/data'
 import AHP from './pages/aplikasi/ahp';
 import SAW from './pages/aplikasi/saw';
 import Tutorial from './pages/tutorial';
+import DataForm from './pages/data/form';
 
 const drawerWidth = 240;
 
@@ -129,6 +128,7 @@ const App = () => {
               <Route path="/ahp" element={ <AHP /> }/>
               <Route path="/saw" element={ <SAW /> }/>
               <Route path="/tutorial" element={ <Tutorial /> }/>
+              <Route path="/data/form" element={ <DataForm /> }/>
           </Routes>
       </Main>
     </Box>
