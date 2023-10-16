@@ -43,7 +43,7 @@ const Sidemenu = () => {
           <ListItemButton href='/saw' sx={{ pl: 4 }}>
             <ListItemText primary="SAW" />
           </ListItemButton>
-          <ListItemButton href='AHP' sx={{ pl: 4 }}>
+          <ListItemButton href='/ahp' sx={{ pl: 4 }}>
             <ListItemText primary="AHP" />
           </ListItemButton>
         </List>
