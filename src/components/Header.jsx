@@ -4,7 +4,7 @@ const Header = ({title}) => {
     return (
         <Box mb='30px'>
             <Typography
-                variant="h4"
+                variant="h6"
                 color={"text.primary"}
                 fontWeight='bold'
                 sx={{ m:'10px'}}

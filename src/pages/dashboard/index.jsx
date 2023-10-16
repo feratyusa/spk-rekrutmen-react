@@ -6,11 +6,14 @@ const Dashboard = () => {
 
 <Box>
     <Header title={'Dashboard'}/>
-    <Box
-        display='flex'
-    >
+    Selamat datang, Pengguna
+    Untuk mengetahui cara penggunaan Auto Recruiter dapat dibaca pada halaman Tutorial
 
-    </Box>
+    Jumlah Data 3
+    Jumlah SAW 5
+    Jumlah AHP 7
+
+    
 </Box>
 
     );
