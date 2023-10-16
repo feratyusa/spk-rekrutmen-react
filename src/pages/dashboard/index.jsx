@@ -19,12 +19,12 @@ const Dashboard = () => {
         <Grid container spacing={1}>
             <Grid item container xs={8} direction={'column'} justifyContent={'center'}>
                 <Grid item>
-                    <Typography variant='h5' fontWeight={'bold'} mb={1}>
+                    <Typography variant='h5' fontWeight={'bold'} mb={1} color='text.primary'>
                         Selamat datang, Pengguna
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <Typography>
+                    <Typography color='text.primary'>
                         Untuk mengetahui cara penggunaan Auto Recruiter dapat dibaca pada halaman <a href="/tutorial">Tutorial</a>
                     </Typography>
                 </Grid>
