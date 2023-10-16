@@ -1,24 +1,32 @@
 import { ListItemText, ListItemButton, Avatar, ListItemAvatar, IconButton, ListItem } from "@mui/material";
-import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 const Datalist = ({data}) => {
     return(
-        <ListItemButton sx={{
-            borderBottom:2,
-            borderColor:'primary.main'
-        }}>
+        <ListItemButton
+            href={'/data/'+ data.id}
+            sx={{
+                borderBottom:2,
+                borderColor:'primary.main'
+            }}
+        >
             <ListItem
                 secondaryAction={
-                    <IconButton edge="end" aria-label="delete">
-                        <DeleteOutlinedIcon />
+                    [
+                    <IconButton edge="end" aria-label="delete" sx={{m:1, p:1}} color='error'>
+                        <DeleteIcon />
+                    </IconButton>, 
+                    <IconButton edge="end" aria-label="delete" sx={{m:1, p:1}} color="warning">
+                        <EditIcon />
                     </IconButton>
+                    ]
                 }
-            >
-                
+            >   
                 <ListItemAvatar>
                     <Avatar>
-                        <FolderOutlinedIcon />
+                        <FolderIcon />
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText

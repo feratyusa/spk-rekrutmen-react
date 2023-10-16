@@ -5,10 +5,12 @@ import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutl
 
 const data = [
     {
+        "id": 1,
         "name": "Mini Dummy",
         "description": "Example Data"
     },
     {
+        "id": 2,
         "name": "Data Perusahaan Kecantikan",
         "description": "400 Calon Karyawan"
     }
@@ -19,9 +21,7 @@ const Data = () => {
 
 <Box>
     <Header title={'Data'}/>
-    <Box
-        
-    >
+    <Box mb="20px">
         <Button variant="contained" startIcon={<CreateNewFolderOutlinedIcon />} href='/data/form'>
             Tambah Data
         </Button>
