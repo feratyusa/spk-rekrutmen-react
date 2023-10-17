@@ -37,13 +37,13 @@ const Dashboard = () => {
     <Box>
     <Grid container>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah Data'} subtitle={'3'}/>
+            <ItemCard title={'Jumlah Data'} subtitle={'2'}/>
         </Grid>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah SAW'} subtitle={'5'}/>
+            <ItemCard title={'Jumlah SAW'} subtitle={'3'}/>
         </Grid>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah AHP'} subtitle={'7'}/>
+            <ItemCard title={'Jumlah AHP'} subtitle={'4'}/>
         </Grid>
     </Grid>
     </Box>
