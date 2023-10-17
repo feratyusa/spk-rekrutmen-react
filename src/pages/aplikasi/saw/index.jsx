@@ -33,7 +33,7 @@ const SAW = () => {
         <Button variant="contained" startIcon={<ScaleIcon />} href='/saw/form' sx={{mb:"10px"}}>
             Tambah SAW
         </Button>
-        <Datalist data={saw} />
+        <Datalist data={saw} type={'saw'}/>
     </Box>
 </Box>
 

@@ -24,7 +24,7 @@ const TableHeader = () => {
     );
 }
 
-const Datalist = ({data}) => {
+const Datalist = ({data, type}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
   
@@ -60,7 +60,13 @@ const Datalist = ({data}) => {
                                 <Stack direction={'row'} spacing={2}>
                                     <IconButton color="error"><DeleteIcon /></IconButton>
                                     <IconButton color="warning"><EditIcon/></IconButton>
-                                    <IconButton color="info"><VisibilityIcon /></IconButton>
+                                    <IconButton color="info" 
+                                      href={ ( type === 'saw' ? '/saw/'+d.id 
+                                              : 'ahp' ? '/ahp/'+ d.id 
+                                              : '/data/'+d.id )}
+                                      >
+                                        <VisibilityIcon />
+                                    </IconButton>
                                 </Stack>
                             </TableCell>
                         </TableRow>
