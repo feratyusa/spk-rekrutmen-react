@@ -19,6 +19,8 @@ import AHP from './pages/aplikasi/ahp';
 import SAW from './pages/aplikasi/saw';
 import Tutorial from './pages/tutorial';
 import DataForm from './pages/data/form';
+import SAWForm from './pages/aplikasi/saw/form';
+import AHPForm from './pages/aplikasi/ahp/form';
 
 const drawerWidth = 240;
 
@@ -129,6 +131,8 @@ const App = () => {
               <Route path="/saw" element={ <SAW /> }/>
               <Route path="/tutorial" element={ <Tutorial /> }/>
               <Route path="/data/form" element={ <DataForm /> }/>
+              <Route path="/saw/form" element={ <SAWForm /> }/>
+              <Route path="/ahp/form" element={ <AHPForm /> }/>
           </Routes>
       </Main>
     </Box>
