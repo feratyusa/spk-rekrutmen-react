@@ -8,11 +8,13 @@ const data =
     "id": 1,
     "name": "SAW Example",
     "description": "Example SAW",
+    "data": "Data Perusahaan Kecantikan",
     "created_at": "2023-04-01",
     "updated_at": "2023-08-05",
     "criterias": [
         {
             "name": "Skillset",
+            "crisps_type": 1,
             "weight": 40,
             "crisps":[
                 {
@@ -31,6 +33,7 @@ const data =
         },
         {
             "name": "Mindset",
+            "crisps_type": 0,
             "weight": 30,
             "crisps":[
                 {
@@ -53,9 +56,34 @@ const data =
     "id": 2,
     "name": "Data Perusahaan Kecantikan",
     "description": "400 Calon Karyawan",
+    "data": "Data Perusahaan Kecantikan",
     "created_at": "2023-04-10",
-    "updated_at": "2023-05-06"
-}]
+    "updated_at": "2023-05-06",
+    "criterias": []
+},
+{
+    "id": 1,
+    "name": "SAW Example",
+    "description": "Example SAW",
+    "data": "Data Perusahaan Kecantikan",
+    "created_at": "2023-04-01",
+    "updated_at": "2023-08-05",
+    "criterias": [
+        {
+            "name": "Skillset",
+            "weight": 40,
+            "crisps_type": 2,
+            "crisps":[]
+        },
+        {
+            "name": "Mindset",
+            "weight": 30,
+            "crisps_type": 0,
+            "crisps":[]
+        }
+    ]
+}
+]
 
 const SAWDetails = () => {
     const { id } = useParams()
