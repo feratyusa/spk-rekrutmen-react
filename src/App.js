@@ -23,6 +23,7 @@ import SAWForm from './pages/aplikasi/saw/form';
 import AHPForm from './pages/aplikasi/ahp/form';
 import DataDetails from './pages/data/details';
 import SAWDetails from './pages/aplikasi/saw/details';
+import SAWCriteriasForm from './pages/aplikasi/saw/form/criterias';
 
 const drawerWidth = 240;
 
@@ -137,6 +138,7 @@ const App = () => {
               <Route path="/ahp/form" element={ <AHPForm /> }/>
               <Route path='/data/:id' element={ <DataDetails /> }/>
               <Route path='/saw/:id' element={ <SAWDetails /> }/>
+              <Route path='/saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
           </Routes>
       </Main>
     </Box>

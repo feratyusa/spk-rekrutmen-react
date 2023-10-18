@@ -62,7 +62,7 @@ const Datalist = ({data, type}) => {
                                     <IconButton color="warning"><EditIcon/></IconButton>
                                     <IconButton color="info" 
                                       href={ ( type === 'saw' ? '/saw/'+d.id 
-                                              : 'ahp' ? '/ahp/'+ d.id 
+                                              : type === 'ahp' ? '/ahp/'+ d.id 
                                               : '/data/'+d.id )}
                                       >
                                         <VisibilityIcon />
