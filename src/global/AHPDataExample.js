@@ -255,6 +255,29 @@ const AHPDataExample =
                     "details": "5,40",
                 }
             ]
+        },
+        {
+            "id": 15,
+            "name": "Toolset",
+            "crisps_type": 1,
+            "importance": [],
+            "crisps":[
+                {
+                    "id": 19,
+                    "name": "Kamera",
+                    "details": "Kamera",
+                },
+                {
+                    "id": 20,
+                    "name": "Maskara",
+                    "details": "Maskara",
+                },
+                {
+                    "id": 21,
+                    "name": "Photoshop",
+                    "details": "Photoshop",
+                }
+            ]
         }
     ]
 },
