@@ -28,6 +28,8 @@ import SAWCrispsForm from './pages/aplikasi/saw/form/crisps';
 import AHPDetails from './pages/aplikasi/ahp/details';
 import AHPCriteriasForm from './pages/aplikasi/ahp/form/criterias';
 import AHPCrispsForm from './pages/aplikasi/ahp/form/crisps';
+import AHPCriteriasImportanceForm from './pages/aplikasi/ahp/form/importance/criterias';
+import AHPCrispsImportanceForm from './pages/aplikasi/ahp/form/importance/crisps';
 
 const drawerWidth = 240;
 
@@ -147,6 +149,8 @@ const App = () => {
               <Route path='/ahp/:id' element={ <AHPDetails /> }/>
               <Route path='/ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
               <Route path='/ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
+              <Route path='/ahp/:id/criterias/importance/form' element={ <AHPCriteriasImportanceForm /> }/>
+              <Route path='/ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
           </Routes>
       </Main>
     </Box>
