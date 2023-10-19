@@ -1,4 +1,4 @@
-import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, InputLabel, IconButton } from "@mui/material";
+import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, InputLabel, IconButton, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Header from "../../../../components/Header";
 import { useState } from "react";
@@ -9,8 +9,8 @@ const SAWCriteriasForm = () => {
     const {id} = useParams()
 
     const [inputFields, setInputFields] = useState([
-        {name: "", criteria_type:"", weight: ""},
-        {name: "", criteria_type:"", weight: ""}
+        {name: "", atribute: "", criteria_type:"", weight: ""},
+        {name: "", atribute: "", criteria_type:"", weight: ""}
     ])
 
     function handleChangeInput(index, event) {
@@ -25,7 +25,7 @@ const SAWCriteriasForm = () => {
     }
 
     function handleAddFields(){
-        setInputFields([...inputFields, {name:"", criteria_type:"", weight:""}])
+        setInputFields([...inputFields, {name:"", atribute: "", criteria_type:"", weight:""}])
     }
 
     function handleRemoveFields(index){
@@ -43,12 +43,33 @@ const SAWCriteriasForm = () => {
                     {inputFields.map((inputField, index) => (
                         <Stack direction={'row'} spacing={2} sx={{mb:2}} key={index}>
                             <TextField
+                                name="id"
+                                label="Urutan"
+                                variant="filled"
+                                disabled
+                                value={index+1}
+                                sx={{maxWidth:80}}
+                            />
+                            <TextField
                                 name="name"
                                 label="Nama"
                                 variant="filled"
                                 value={inputField.name}
                                 onChange={(event) => handleChangeInput(index, event)}
                             />
+                            <FormControl variant="filled" sx={{ minWidth: 200 }}>
+                                <InputLabel id="atribute">Atribut</InputLabel>
+                                <Select 
+                                    labelId="atribute"
+                                    name="atribute"
+                                    label="Atribute"
+                                    value={inputField.atribute}
+                                    onChange={(event) => handleChangeInput(index, event)}
+                                >
+                                    <MenuItem value={0}>Benefit</MenuItem>
+                                    <MenuItem value={1}>Cost</MenuItem>
+                                </Select>
+                            </FormControl>
                             <FormControl variant="filled" sx={{ minWidth: 200 }}>
                                 <InputLabel id="type">Tipe Kriteria</InputLabel>
                                 <Select 
@@ -103,7 +124,6 @@ const SAWCriteriasForm = () => {
                             Cancel
                         </Button>
                     </Stack>
-                    
                 </form>
             </Paper>
         </Box>
