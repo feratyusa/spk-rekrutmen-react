@@ -24,6 +24,8 @@ import AHPForm from './pages/aplikasi/ahp/form';
 import DataDetails from './pages/data/details';
 import SAWDetails from './pages/aplikasi/saw/details';
 import SAWCriteriasForm from './pages/aplikasi/saw/form/criterias';
+import SAWCrispsForm from './pages/aplikasi/saw/form/crisps';
+import AHPDetails from './pages/aplikasi/ahp/details';
 
 const drawerWidth = 240;
 
@@ -116,7 +118,7 @@ const App = () => {
       >
         <DrawerHeader>
           <img 
-            src="../../assets/logo/svg/logo-no-background.svg" alt="AutoRecruiter" width={'180px'}
+            src="/../../assets/logo/svg/logo-no-background.svg" alt="AutoRecruiter" width={'180px'}
           />
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -139,6 +141,8 @@ const App = () => {
               <Route path='/data/:id' element={ <DataDetails /> }/>
               <Route path='/saw/:id' element={ <SAWDetails /> }/>
               <Route path='/saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
+              <Route path='/saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
+              <Route path='/ahp/:id' element={ <AHPDetails /> }/>
           </Routes>
       </Main>
     </Box>
