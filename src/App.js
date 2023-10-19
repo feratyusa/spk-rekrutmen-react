@@ -27,6 +27,7 @@ import SAWCriteriasForm from './pages/aplikasi/saw/form/criterias';
 import SAWCrispsForm from './pages/aplikasi/saw/form/crisps';
 import AHPDetails from './pages/aplikasi/ahp/details';
 import AHPCriteriasForm from './pages/aplikasi/ahp/form/criterias';
+import AHPCrispsForm from './pages/aplikasi/ahp/form/crisps';
 
 const drawerWidth = 240;
 
@@ -145,6 +146,7 @@ const App = () => {
               <Route path='/saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
               <Route path='/ahp/:id' element={ <AHPDetails /> }/>
               <Route path='/ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
+              <Route path='/ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
           </Routes>
       </Main>
     </Box>

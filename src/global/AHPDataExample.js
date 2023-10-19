@@ -329,8 +329,33 @@ const AHPDataExample =
                 }
             ]
         }
+    ],
+},
+{
+    "id": 20,
+    "name": "Data Perusahaan Kecantikan",
+    "description": "400 Calon Karyawan",
+    "data": "Data Perusahaan Kecantikan",
+    "created_at": "2023-04-10",
+    "updated_at": "2023-05-06",
+    "result_path": "",
+    "criterias": [
+        {
+            "id": 11,
+            "name": "Skillset",
+            "crisps_type": 1,
+            "importance":[],
+            "crisps":[]
+        },
+        {
+            "id": 12,
+            "name": "Mindset",
+            "crisps_type": 0,
+            "importance":[],
+            "crisps":[]
+        }
     ]
-}      
+},
 ]
 
 export default AHPDataExample
