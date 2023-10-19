@@ -2,21 +2,9 @@ import { Box, Button} from '@mui/material';
 import Header from '../../components/Header'
 import Datalist from '../../components/Datalist';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+import DataExample from '../../global/DataExample';
 
-const data = [
-    {
-        "id": 1,
-        "name": "Mini Dummy",
-        "description": "Example Data",
-        "created_at": "2023-04-01"
-    },
-    {
-        "id": 2,
-        "name": "Data Perusahaan Kecantikan",
-        "description": "400 Calon Karyawan",
-        "created_at": "2023-04-10"
-    }
-]
+const data = DataExample
 
 const Data = () => {
     return (
