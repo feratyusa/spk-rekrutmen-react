@@ -3,21 +3,9 @@ import Header from '../../../../components/Header'
 import CustomInputText from "../../../../components/CustomInputText";
 import { Box, Stack, Divider, Autocomplete, TextField} from '@mui/material';
 import Button from '@mui/material/Button';
+import DataExample from "../../../../global/DataExample";
 
-const data = [
-    {
-        "id": 1,
-        "name": "Mini Dummy",
-        "description": "Example Data",
-        "created_at": "2023-04-01"
-    },
-    {
-        "id": 2,
-        "name": "Data Perusahaan Kecantikan",
-        "description": "400 Calon Karyawan",
-        "created_at": "2023-04-10"
-    }
-];
+const data = DataExample
 
 const AHPForm = () => {
     return(

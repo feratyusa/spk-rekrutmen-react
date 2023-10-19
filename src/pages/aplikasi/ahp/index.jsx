@@ -2,33 +2,9 @@ import { Box, Button } from '@mui/material'
 import Header from '../../../components/Header'
 import Datalist from '../../../components/Datalist'
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import AHPDataExample from '../../../global/AHPDataExample';
 
-const ahp = [
-    {
-        "id": 1,
-        "name": "Example AHP",
-        "description": "Example Data",
-        "created_at": "2023-04-01"
-    },
-    {
-        "id": 2,
-        "name": "AHP Perusahaan Kecantikan",
-        "description": "400 Calon Karyawan",
-        "created_at": "2023-04-01"
-    },
-    {
-        "id": 3,
-        "name": "AHP Perusahaan Bangunan",
-        "description": "200 Calon Karyawan",
-        "created_at": "2023-05-06"
-    },
-    {
-        "id": 4,
-        "name": "AHP Perusahaan Listrik",
-        "description": "Pengabdian Semesta",
-        "created_at": "2023-10-08"
-    }
-]
+const data = AHPDataExample
 
 const AHP = () => {
     return (
@@ -39,7 +15,7 @@ const AHP = () => {
         <Button variant="contained" startIcon={<AccountTreeIcon />} href='/ahp/form' sx={{mb:"10px"}}>
             Tambah AHP
         </Button>
-        <Datalist data={ahp} />
+        <Datalist data={data} type='ahp'/>
     </Box>
 </Box>
 
