@@ -1,14 +1,12 @@
 import { Box } from "@mui/material";
 import CriteriasForm from "../../../../components/CriteriasForm";
 
-const SAWCriteriasForm = () => {
-    
+const AHPCriteriasForm = () => {
     return(
         <Box>
-            <CriteriasForm type={'saw'}/>
+            <CriteriasForm type={'ahp'} />
         </Box>
-        
     );
 }
 
-export default SAWCriteriasForm;
+export default AHPCriteriasForm
