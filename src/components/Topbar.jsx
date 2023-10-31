@@ -15,8 +15,10 @@ import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Outlet } from "react-router-dom";
+import { Outlet, redirect, useNavigate } from "react-router-dom";
 import Sidemenu from "./Sidemenu";
+import handleLogout from "../utils/handleLogout";
+import { useEffect } from "react";
 
 const drawerWidth = 240;
 
@@ -67,6 +69,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const TopbarComponents = () => {
     const settings = ['Profile', 'Logout']
+    const navigate = useNavigate()
     const [anchorElUser, setAnchorElUser] = useState();
 
     const handleOpenUserMenu = (event) => {
@@ -75,6 +78,13 @@ const TopbarComponents = () => {
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
+    const handleUserMenu = async (setting) => {
+      
+      if(setting === 'Logout'){
+        const { data } = await handleLogout()
+        navigate('/login')
+      }
+    }
 
     return(
         <Grid container spacing={2} alignItems={'center'}>
@@ -119,8 +129,8 @@ const TopbarComponents = () => {
                     onClose={handleCloseUserMenu}
                   >
                   {settings.map((setting) => (
-                      <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
+                      <MenuItem key={setting} name={setting} onClick={(event) => handleUserMenu(setting)} href="/">
+                        <Typography textAlign="center">{setting}</Typography>
                       </MenuItem>
                   ))}
                   </Menu>
@@ -191,4 +201,4 @@ const Topbar = () => {
     );
 }
 
-export default Topbar;
+export default Topbar

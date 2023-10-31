@@ -1,32 +1,55 @@
 import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
 import Header from '../../../components/Header'
-import CustomInputText from "../../../components/CustomInputText";
-import { Box, FormControl, Stack, Divider} from '@mui/material';
+import { Box, FormControl, Stack, Divider, TextField} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Button from '@mui/material/Button';
-import { Form } from "react-router-dom";
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
+import axios, { getCookie } from "../../../utils/axios";
+import { useNavigate } from "react-router-dom";
 
 const DataForm = () => {
     const [file, setFile] = useState('');
     const [fileName, setFileName] = useState('');
+    const navigate = useNavigate()
+    const [inputField, setInputField] = useState(
+        {name:"", description:""}
+    )
+
+    function handleChangeInput(event) {
+        const values = inputField
+        values[event.target.name] = event.target.value
+        setInputField(values)
+    }
 
     const handleselectedFile = event => {
         setFile(event.target.files[0])
         setFileName(event.target.files[0].name)
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const data = {
+            name: inputField.name,        
+            file: file
+        }
+        axios.post('/api/data/create', data,{
+            headers:{
+                'Content-Type': 'multipart/form-data',
+                'X-CSRF-TOKEN': getCookie('csrf_access_token')
+            },
+            withCredentials:true
+        }).then(function(response){
+            console.log(response.data)
+            navigate('/data/'+response.data.id)
+        }).catch(function(error){
+            if(error.response){
+                console.log(error.response)
+            }
+            else if(error.request){
+                console.log(error.request)
+            }
+            console.log(error.config)
+        })
+    }
 
     return(
         <Box>
@@ -39,10 +62,22 @@ const DataForm = () => {
                     boxShadow:5
                 }}
             >
-                <form method="post" action="/data/creates" onSubmit={''}>
-                    <Stack alignContent={'center'}>
-                    <CustomInputText desc='Name'/>
-                    <CustomInputText desc='Description'/>
+                <form onSubmit={handleSubmit}>
+                    <Stack spacing={2} alignContent={'center'}>
+                    <TextField
+                        name="name"
+                        label="Nama File"
+                        variant="filled"
+                        defaultValue={inputField.name}
+                        onChange={(event) => handleChangeInput(event)}
+                    />
+                    <TextField
+                        name="description"
+                        label="Deskripsi File"
+                        variant="filled"
+                        defaultValue={inputField.description}
+                        onChange={(event) => handleChangeInput(event)}
+                    />
                     <FormControl sx={{mb:2}}>
                         {
                             fileName == '' ? 

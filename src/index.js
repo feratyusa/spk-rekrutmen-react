@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { AuthProvider } from './context/AuthProvider';
 import theme from './theme';
 import './index.css'
 
@@ -14,8 +15,9 @@ root.render(
     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+          <App /> 
+        </AuthProvider>      
       </BrowserRouter>
-      
   </ThemeProvider>,
 );

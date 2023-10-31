@@ -2,17 +2,40 @@ import { Box, Button } from '@mui/material'
 import Header from '../../../components/Header'
 import Datalist from '../../../components/Datalist'
 import ScaleIcon from '@mui/icons-material/Scale';
-import SAWDataExample from '../../../global/SAWDataExample';
-
-const saw = SAWDataExample
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useRef } from 'react';
+import getSAW from '../../../utils/handler/getSAW';
+import getData from '../../../utils/handler/getData';
 
 const SAW = () => {
+    const [saw, setSAW] = useState()
+    const [loading, setLoading] = useState(true)
+    const counter = useRef(0)
+
+    useEffect(() => {
+      Promise.all([getSAW(), getData()])
+        .then(function([saw, data]){
+            console.log(saw.data)
+            console.log(data.data)
+            counter.current = data.data.length ? data.data.length : 0
+            setSAW(saw.data)
+            setLoading(false)
+        })
+    }, [loading])
+    
     return (
+        loading ? '' :
 
 <Box>
     <Header title={'Simple Additive Weight'}/>
     <Box mb="20px">
-        <Button variant="contained" startIcon={<ScaleIcon />} href='/saw/form' sx={{mb:"10px"}}>
+        <Button 
+            variant="contained" 
+            startIcon={<ScaleIcon />} 
+            href='/saw/form' sx={{mb:"10px"}}
+            disabled={counter.current === 0 ? true : false}
+        >
             Tambah SAW
         </Button>
         <Datalist data={saw} type={'saw'}/>

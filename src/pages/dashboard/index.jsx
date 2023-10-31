@@ -1,9 +1,33 @@
 import { Box, Typography, Grid } from '@mui/material';
 import Header from '../../components/Header'
 import ItemCard from '../../components/ItemCard';
+import useAuth from '../../utils/useAuth'
+import getData from '../../utils/handler/getData'
+import getAHP from '../../utils/handler/getAHP';
+import getSAW from '../../utils/handler/getSAW';
+import { useEffect } from 'react';
+import { useRef } from 'react';
+import { useState } from 'react';
 
 const Dashboard = () => {
+    const {auth} = useAuth()
+    const [loading, setLoading] = useState(true)
+    const jumlahData = useRef(0)
+    const jumlahSAW = useRef(0)
+    const jumlahAHP = useRef(0)
+    
+    useEffect(() => {
+        Promise.all([getData(), getSAW(), getAHP()])
+            .then(function([data, saw, ahp]){
+                jumlahData.current = data.data.length ? data.data.length : 0
+                jumlahSAW.current = saw.data.length ? saw.data.length : 0
+                jumlahAHP.current = ahp.data.length ? ahp.data.length : 0
+                setLoading(false)
+            })
+    }, [loading])
+    
     return (
+        loading ? '' :
 
 <Box>
     <Header title={'Dashboard'}/>
@@ -20,7 +44,7 @@ const Dashboard = () => {
             <Grid item container xs={8} direction={'column'} justifyContent={'center'}>
                 <Grid item>
                     <Typography variant='h5' fontWeight={'bold'} mb={1} color='text.primary'>
-                        Selamat datang, Pengguna
+                        Selamat datang, {auth.user}
                     </Typography>
                 </Grid>
                 <Grid item>
@@ -37,13 +61,13 @@ const Dashboard = () => {
     <Box>
     <Grid container>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah Data'} subtitle={'2'}/>
+            <ItemCard title={'Jumlah Data'} subtitle={jumlahData.current}/>
         </Grid>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah SAW'} subtitle={'3'}/>
+            <ItemCard title={'Jumlah SAW'} subtitle={jumlahSAW.current}/>
         </Grid>
         <Grid item xs={4}>
-            <ItemCard title={'Jumlah AHP'} subtitle={'4'}/>
+            <ItemCard title={'Jumlah AHP'} subtitle={jumlahAHP.current}/>
         </Grid>
     </Grid>
     </Box>

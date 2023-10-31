@@ -20,30 +20,37 @@ import AHPCriteriasImportanceForm from './pages/aplikasi/ahp/form/importance/cri
 import AHPCrispsImportanceForm from './pages/aplikasi/ahp/form/importance/crisps';
 import Login from './pages/login';
 import Register from './pages/register';
+import RequireAuth from './components/RequireAuth';
+import { AuthProvider } from './context/AuthProvider';
 
 const App = () => {
   return (
-    <Routes>  
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
-      <Route path="/" element={ <Topbar /> }>
-        <Route path="" element={ <Dashboard />} />
-        <Route path="data" element={ <Data /> }/>
-        <Route path="ahp" element={ <AHP /> }/>
-        <Route path="saw" element={ <SAW /> }/>
-        <Route path="tutorial" element={ <Tutorial /> }/>
-        <Route path="data/form" element={ <DataForm /> }/>
-        <Route path="saw/form" element={ <SAWForm /> }/>
-        <Route path="ahp/form" element={ <AHPForm /> }/>
-        <Route path='data/:id' element={ <DataDetails /> }/>
-        <Route path='saw/:id' element={ <SAWDetails /> }/>
-        <Route path='saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
-        <Route path='saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
-        <Route path='ahp/:id' element={ <AHPDetails /> }/>
-        <Route path='ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
-        <Route path='ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
-        <Route path='ahp/:id/criterias/importance/form' element={ <AHPCriteriasImportanceForm /> }/>
-        <Route path='ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
+    <Routes> 
+      <Route path="/">
+        <Route path='login' element={<Login />} />
+        <Route path='register' element={<Register />} />
+
+        <Route element={<RequireAuth />}>
+          <Route element={<Topbar />}>
+            <Route path="" element={ <Dashboard />} />
+            <Route path="data" element={ <Data /> }/>
+            <Route path="ahp" element={ <AHP /> }/>
+            <Route path="saw" element={ <SAW /> }/>
+            <Route path="tutorial" element={ <Tutorial /> }/>
+            <Route path="data/form" element={ <DataForm /> }/>
+            <Route path="saw/form" element={ <SAWForm /> }/>
+            <Route path="ahp/form" element={ <AHPForm /> }/>
+            <Route path='data/:id' element={ <DataDetails /> }/>
+            <Route path='saw/:id' element={ <SAWDetails /> }/>
+            <Route path='saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
+            <Route path='saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
+            <Route path='ahp/:id' element={ <AHPDetails /> }/>
+            <Route path='ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
+            <Route path='ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
+            <Route path='ahp/:id/criterias/importance/form' element={ <AHPCriteriasImportanceForm /> }/>
+            <Route path='ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );

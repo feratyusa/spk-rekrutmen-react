@@ -1,12 +1,15 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, InputLabel, IconButton } from "@mui/material";
 import Header from "./Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import axios from '../utils/axios'
+import { getCookie } from "../utils/axios";
 
 const CriteriasForm = ({type}) => {
     const {id} = useParams()
+    const navigate = useNavigate()
 
     const criterias = (type === 'saw' ? {name: "", atribute: "", crisps_type:"", weight: ""}
                         : {name: "", crisps_type:""})
@@ -24,6 +27,31 @@ const CriteriasForm = ({type}) => {
     function handleSubmit(e){
         e.preventDefault();
         console.log(inputFields);
+        if(type==='saw'){
+            const data = { name:[], atribute:[], crisp_type: [], weight: []}
+            for (let index = 0; index < inputFields.length; index++) {
+                data.name.push(inputFields[index].name)
+                data.atribute.push(inputFields[index].atribute)
+                data.crisp_type.push(inputFields[index].crisps_type)
+                data.weight.push(inputFields[index].weight)
+            }
+            console.log(data)
+            axios.post('/api/saw/'+id+'/criterias/create',data,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials:true
+            }).then(function(response){
+                console.log(response.data)
+                navigate('/saw/'+id)
+            }).catch(function(error){
+                if(error.response){
+                   console.log(error.response)
+                }
+                console.log(error.config)
+            })
+        }
     }
 
     function handleAddFields(){

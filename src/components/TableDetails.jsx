@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {Box, Button, Collapse, IconButton, Paper, Stack, 
     Table, TableBody, TableCell, TableContainer, TableRow, Typography, TableHead, Alert, Grid} from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
 import AddIcon from '@mui/icons-material/Add';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -9,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Header from "./Header";
 import { useParams } from "react-router-dom";
+import runSAWMethod from "../utils/handler/runSAWMethod";
 
 function SAWCrisp({criteria}) {
     const {id} = useParams()
@@ -29,8 +31,8 @@ function SAWCrisp({criteria}) {
                 </TableCell>
                 <TableCell>
                     {
-                        criteria.crisps_type === 0 ? 'Number'
-                        : criteria.crisps_type === 1 ? 'String'
+                        criteria.crisp_type === 0 ? 'Number'
+                        : criteria.crisp_type === 1 ? 'String'
                         : 'Sub String'
                     }
                 </TableCell>
@@ -40,7 +42,7 @@ function SAWCrisp({criteria}) {
                         color="info"
                         aria-label="expand row" 
                         size="small" 
-                        disabled={ !criteria.hasOwnProperty('crisps') || criteria.crisps.length === 0 ? true : false}
+                        disabled={ criteria.saw_crisp.length === 0 ? true : false}
                         onClick={() => setOpenCrisp(!openCrisp)}
                     >
                         {openCrisp ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -48,7 +50,7 @@ function SAWCrisp({criteria}) {
                 </TableCell>
                 <TableCell>
                     {
-                        criteria.crisps.length === 0 ?
+                        criteria.saw_crisp.length === 0 ?
                         <Button 
                             variant="contained"
                             aria-label="expand row" 
@@ -96,12 +98,12 @@ function SAWCrisp({criteria}) {
                                 </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                {criteria.crisps.map((crisp) => (
+                                {criteria.saw_crisp.map((crisp) => (
                                     <TableRow key={crisp.id}>
                                         <TableCell component="th" scope="row">
                                             {crisp.name}
                                         </TableCell>
-                                        <TableCell>{crisp.details}</TableCell>
+                                        <TableCell>{crisp.detail}</TableCell>
                                         <TableCell>{crisp.weight}</TableCell>
                                     </TableRow>
                                 ))}
@@ -150,7 +152,7 @@ function SAWComponents({props}){
                 </TableCell>                
                 <TableCell>
                     {
-                        props.criterias.length !== 0 ?
+                        props.saw_criteria.length !== 0 ?
                         <Stack direction={'row'} spacing={2}>
                             <Button 
                                 variant="contained"
@@ -198,7 +200,7 @@ function SAWComponents({props}){
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                 <Collapse in={openCriteria} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1}}>
-                        <SAWCriteria props={props.criterias}/>
+                        <SAWCriteria props={props.saw_criteria}/>
                     </Box>
                 </Collapse>
                 </TableCell>
@@ -219,7 +221,7 @@ function AHPCrisp({criteria}){
                 </TableCell>
                 <TableCell>
                     {
-                        criteria.crisps_type === 0 ? 'Number'
+                        criteria.crisp_type === 0 ? 'Number'
                         : 'String'
                     }
                 </TableCell>
@@ -656,13 +658,14 @@ const TableDetails = ({data, type}) => {
         : type === 'ahp' ? 'AHP Details'
         : 'SAW Details'
     )
+    const [loadingRun, setLoadingRun] = useState(false)
 
     function check_data(){
         if(type==='data') return 1
         if(type==='saw'){
-            if(data.criterias.length === 0) return -2
-            for (let index = 0; index < data.criterias.length; index++) {
-                if(data.criterias[index].crisps.length === 0) return -1
+            if(data.saw_criteria.length === 0) return -2
+            for (let index = 0; index < data.saw_criteria.length; index++) {
+                if(data.saw_criteria[index].saw_crisp.length === 0) return -1
             }            
             return 0
         }
@@ -682,6 +685,16 @@ const TableDetails = ({data, type}) => {
         }
     }
 
+    function handleRunMethod(){
+        setLoadingRun(true)
+        Promise.all([runSAWMethod(data.id)])
+            .then(function(response){
+                console.log(response)
+                setLoadingRun(false)
+                window.location.reload();
+            })
+    }
+
     return(
         <Paper sx={{width:'100%', overflow:'hidden'}}>
             <Grid container justifyContent={'space-between'}>
@@ -690,25 +703,16 @@ const TableDetails = ({data, type}) => {
                 </Grid>
                 <Grid item>
                     {
-                        check_data() === 1?
-                        ''
-                        : type === 'saw' ?
-                        <Button variant="contained" 
+                        check_data() === 1? '' :
+                        <LoadingButton variant="contained" 
                             endIcon={<AddIcon />}
-                            href={'/saw/'+data.id+'/method/create'}
                             sx={{m:2}}
                             disabled={check_data() !== 0 ? true : false}
+                            onClick={handleRunMethod}
+                            loading={loadingRun}
                         >
                             Jalankan
-                        </Button> :
-                            <Button variant="contained" 
-                            endIcon={<AddIcon />}
-                            href={'/ahp/'+data.id+'/method/create'}
-                            sx={{m:2}}
-                            disabled={check_data() !== 0 ? true : false}
-                        >
-                            Jalankan
-                        </Button>                           
+                        </LoadingButton>           
                     }
                 </Grid>
             </Grid>
@@ -745,7 +749,7 @@ const TableDetails = ({data, type}) => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    {data.data}
+                                    {data.data.name}
                                 </TableCell>
                             </TableRow>
                         }
@@ -777,9 +781,9 @@ const TableDetails = ({data, type}) => {
                                         Result
                                     </Typography>
                                 </TableCell>
-                                <TableCell id="updated_at">
+                                <TableCell id="result">
                                         {
-                                            data.result_path === '' ?
+                                            data.result_path === null ?
                                             <Alert severity="warning">Metode belum dijalankan</Alert> :
                                             <Button startIcon={<CloudDownloadIcon />} color='info' variant="contained">
                                                 Download
@@ -797,7 +801,7 @@ const TableDetails = ({data, type}) => {
                                         Status
                                     </Typography>
                                 </TableCell>
-                                <TableCell id="updated_at">
+                                <TableCell id="status">
                                         {
                                             check_data() === -2 ?
                                             <Stack direction={'row'} spacing={2}>

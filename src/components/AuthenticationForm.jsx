@@ -1,14 +1,19 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useState } from "react"
 import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
 import Header from "./Header"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios, { getCookie } from "../utils/axios"
+import useAuth from "../utils/useAuth"
+import { useRef } from "react"
 
 const RegisterForm = () => {
+    const errRef = useRef(false)
+    const navigate = useNavigate()
     const [inputField, setInputField] = useState(
         {username: "", email: "", password: "", retype_password: ""}
     )
-
+    
     function handleOnChangeInput(event){
         inputField[event.target.name] = event.target.value
         setInputField(inputField)
@@ -16,8 +21,37 @@ const RegisterForm = () => {
 
     function handleSubmit(e){
         e.preventDefault()
-        alert("Passwords hallo")
-        console.log(inputField)
+        if(inputField.password !== inputField.retype_password){
+            console.log("Password doesn't match")
+        }
+        else{
+            axios.post('/api/user/create',{
+                username: inputField.username,
+                password: inputField.password,
+                email: inputField.email
+            },
+            {
+                headers:{
+                    'Content-Type': 'multipart/form-data',
+                    'X-CSRF-TOKEN': getCookie('csrf-access-token')
+                },
+                withCredentials: true
+            }).then(function(response){
+                console.log(response)
+                navigate('/login')
+            }).catch(function(error){
+                if(error.response){
+                    console.log(error.response)
+                }
+                else if(error.request){
+                    console.log(error.request)
+                }
+                else{
+                    console.log(error.message)
+                }
+                console.log(error.config);
+            })
+        }
     }
 
     return(
@@ -32,8 +66,8 @@ const RegisterForm = () => {
                         onChange={(event) => handleOnChangeInput(event)}
                     />
                     <TextField 
-                        name="username"
-                        label="Username"
+                        name="email"
+                        label="Email"
                         variant="outlined"
                         type="email"
                         onChange={(event) => handleOnChangeInput(event)}
@@ -70,6 +104,8 @@ const RegisterForm = () => {
 }
 
 const LoginForm = () => {
+    const { setAuth } = useAuth()
+    const navigate = useNavigate()
     const [inputField, setInputField] = useState(
         {username: "", password: ""}
     )
@@ -81,7 +117,31 @@ const LoginForm = () => {
 
     function handleSubmit(e){
         e.preventDefault()
-        console.log(inputField)
+        axios.post('/api/login',{
+            username: inputField.username,
+            password: inputField.password
+        },
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+        }).then(function(response){
+            setAuth({user:inputField.username})
+            console.log(response)
+            navigate('/')
+        }).catch(function(error){
+            if(error.response){
+                console.log(error.response)
+            }
+            else if(error.request){
+                console.log(error.request)
+            }
+            else{
+                console.log(error.message)
+            }
+            console.log(error.config);
+        })
     }
 
     return(

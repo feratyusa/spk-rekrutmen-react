@@ -1,21 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, InputLabel, IconButton, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "./Header";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import AHPDataExample from "../global/AHPDataExample";
 import SAWDataExample from "../global/SAWDataExample";
+import getSAWID from "../utils/handler/getSAWID";
+import axios, { getCookie } from "../utils/axios";
 
 const saw = SAWDataExample
 const ahp = AHPDataExample
 
 const CrispsForm = ({type}) => {
     const {id, c_id} = useParams()
+    const criteria = useRef(null)
+    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
-    const d = (type === 'saw' ? saw.find(s => s.id === parseInt(id)) : ahp.find(s => s.id === parseInt(id)))
-    const criteria = d.criterias.find(c => c.id === parseInt(c_id))
-
+    useEffect(() => {
+      if(type === 'saw'){
+        Promise.all([getSAWID(id)])
+            .then(function([saw]){
+                criteria.current = saw.data.saw_criteria.find(c => c.id === parseInt(c_id))
+                console.log(criteria)
+                setLoading(false)
+            }).catch(function([error]){
+                console.log(error.config)
+            })
+      }
+    }, [loading])
+    
     const crisps = (
         type === 'saw' ? {name: "", comparator:"", num1: "", num2: "", details:"", weight: ""}
         : {name: "", comparator:"", num1: "", num2: "", details:""}
@@ -35,7 +50,7 @@ const CrispsForm = ({type}) => {
         e.preventDefault();
         let inputs = []        
         for (let index = 0; index < inputFields.length; index++) {
-            if(criteria.crisps_type===0){
+            if(criteria.current.crisp_type===0){
                 if(inputFields[index]['comparator'] === 5 || inputFields[index]['comparator'] === 6){
                     const details = inputFields[index]['comparator']+','+inputFields[index]['num1']+','+inputFields[index]['num2']
                     if(type === 'saw')
@@ -80,6 +95,27 @@ const CrispsForm = ({type}) => {
             }
         }
         console.log(inputs);
+        if(type === 'saw'){
+            const data = {name:[], detail:[], weight: []}
+            for (let index = 0; index < inputs.length; index++) {
+                data.name.push(inputs[index].name)
+                data.detail.push(inputs[index].details)
+                data.weight.push(inputs[index].weight)
+            }
+            axios.post('/api/saw/'+id+'/criterias/'+c_id+'/crisps/create', data,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials: true
+            }).then(function(response){
+                console.log(response)
+                navigate('/saw/'+id)
+            }).catch(function(error){
+                if(error.response) console.log(error.response)
+                console.log(error.config)
+            })
+        }
     }
 
     function handleAddFields(){
@@ -93,12 +129,13 @@ const CrispsForm = ({type}) => {
     }
     
     return(
+        loading ? '' :
         <Box>
             <Header title={'SAW Crisps Form'}/>
             <Paper sx={{p:3}}>
                 <Box sx={{mb:2}}>
                     <Typography variant="h6">
-                        Kriteria: {criteria.name}
+                        Kriteria: {criteria.current.name}
                     </Typography>
                 </Box>
                 <form onSubmit={handleSubmit}>
@@ -121,7 +158,7 @@ const CrispsForm = ({type}) => {
                                 onChange={(event) => handleChangeInput(index, event)}
                             />
                             {
-                                criteria.crisps_type === 0 ?
+                                criteria.current.crisp_type === 0 ?
                                 <React.Fragment>
                                     <FormControl variant="filled" sx={{ minWidth: 200 }}>
                                         <InputLabel id="type">Komparator</InputLabel>

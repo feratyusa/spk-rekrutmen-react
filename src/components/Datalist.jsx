@@ -1,10 +1,13 @@
 import React from "react";
 import { useState } from "react";
 import {TableHead , Table, TableRow, TableCell, 
-    Stack, Paper, TableContainer, TablePagination, TableBody, Typography, IconButton} from "@mui/material";
+    Stack, Paper, TableContainer, TablePagination, TableBody, Typography, IconButton, Alert} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useEffect } from "react";
+import { useRef } from "react";
+import getData from "../utils/handler/getData";
 
 const TableHeader = () => {
     return (
@@ -27,6 +30,18 @@ const TableHeader = () => {
 const Datalist = ({data, type}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(true)
+    const counter = useRef(0)
+
+    useEffect(() => {
+      Promise.all([getData()])
+        .then(function([data]){
+          console.log(data.data)
+          counter.current = data.data.length ? data.data.length : 0
+          setLoading(false)
+        })
+    }, [loading])
+    
   
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -38,6 +53,33 @@ const Datalist = ({data, type}) => {
     };
   
     return (
+      Array.isArray(data) === false ?
+      <Paper sx={{ width: '100%', p:3}}>
+        <Stack spacing={2} alignItems={'center'}>
+          {
+            type === 'data' ?
+            <React.Fragment>
+              <Typography variant="h6">
+                Data Kosong
+              </Typography>
+            </React.Fragment> :
+            <React.Fragment>
+              <Typography variant="h6">
+                {
+                  type === 'saw' ? 'SAW Kosong' : 'AHP Kosong'
+                }
+              </Typography>
+              {
+                counter.current === 0 ?
+                <Alert severity="error">Tambah Data baru terlebih dahulu sebelum menambahkan SAW</Alert> :    
+                ''
+              }
+            </React.Fragment> 
+          }
+        </Stack>
+      </Paper>
+      
+      :
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">

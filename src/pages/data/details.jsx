@@ -1,19 +1,28 @@
-import React from "react";
 import TableDetails from "../../components/TableDetails";
 import { Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
-import DataExample from "../../global/DataExample";
-
-const data = DataExample
+import { useState } from "react";
+import { useEffect } from "react";
+import getDataID from "../../utils/handler/getDataID";
 
 const DataDetails = () =>{
     const {id} = useParams()
+    const [data, setData] = useState()
+    const [loading, setLoading] = useState(true)
 
-    const d = data.find(d => d.id === parseInt(id))
+    useEffect(() => {
+      Promise.all([getDataID(id)])
+        .then(function([data]){
+            console.log(data)
+            setData(data.data)
+            setLoading(false)
+        })
+    }, [loading])
 
     return(
+        loading ? '' :
         <Paper elevation={1} square={false} >
-            <TableDetails data={d} type={'data'} />
+            <TableDetails data={data} type={'data'} />
         </Paper>
     );
 }
