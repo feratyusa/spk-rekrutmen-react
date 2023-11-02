@@ -1,4 +1,4 @@
-import axios from "../axios"
+import axios from "../../axios"
 
 const getData = () => {
     return axios.get('/api/data',{

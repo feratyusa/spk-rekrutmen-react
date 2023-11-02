@@ -3,40 +3,24 @@ import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, In
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "./Header";
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
 import AHPDataExample from "../global/AHPDataExample";
 import getSAWID from "../utils/handler/saw/getSAWID";
 import axios, { getCookie } from "../utils/axios";
 
 const ahp = AHPDataExample
 
-const CrispsForm = ({type}) => {
+const EditCrispsForm = ({type}) => {
     const {id, c_id} = useParams()
     const criteria = useRef(null)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-
-    useEffect(() => {
-      if(type === 'saw'){
-        Promise.all([getSAWID(id)])
-            .then(function([saw]){
-                criteria.current = saw.data.saw_criteria.find(c => c.id === parseInt(c_id))
-                console.log(criteria)
-                setLoading(false)
-            }).catch(function([error]){
-                console.log(error.config)
-            })
-      }
-    }, [loading])
     
     const crisps = (
         type === 'saw' ? {name: "", comparator:"", num1: "", num2: "", details:"", weight: ""}
         : {name: "", comparator:"", num1: "", num2: "", details:""}
     )
 
-    const [inputFields, setInputFields] = useState([
-        crisps
-    ])
+    const [inputFields, setInputFields] = useState()
 
     function handleChangeInput(index, event) {
         const values = [...inputFields]
@@ -100,7 +84,7 @@ const CrispsForm = ({type}) => {
                 data.detail.push(inputs[index].details)
                 data.weight.push(inputs[index].weight)
             }
-            axios.post('/api/saw/'+id+'/criterias/'+c_id+'/crisps/create', data,{
+            axios.put('/api/saw/'+id+'/criterias/'+c_id+'/crisps/update', data,{
                 headers:{
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': getCookie('csrf_access_token')
@@ -125,11 +109,34 @@ const CrispsForm = ({type}) => {
         values.splice(index, 1);
         setInputFields(values)
     }
+
+    useEffect(() => {
+        if(type==='saw'){
+            Promise.all([getSAWID(id)])
+                .then(function([response]){
+                    console.log(response.data)
+                    criteria.current = response.data.saw_criteria.find(c => c.id === parseInt(c_id))
+                    const saw_crisp = criteria.current.saw_crisp
+                    console.log(saw_crisp)
+                    const inputs = []
+                    for (let index = 0; index < saw_crisp.length; index++) {
+                        const detail = saw_crisp[index].detail.split(",")
+                        const c = {name:saw_crisp[index].name, comparator:parseInt(detail[0]), 
+                            num1:detail[1], num2:detail[2]? detail[2] : "", details:"", weight:saw_crisp[index].weight}
+                        inputs.push(c)
+                    }
+                    setInputFields(inputs)
+                    console.log(inputFields)
+                }).finally(function(){
+                    setLoading(false)
+                })
+        }
+    }, [loading])
     
     return(
         loading ? '' :
         <Box>
-            <Header title={'SAW Crisps Form'}/>
+            <Header title={'SAW Crisps Edit'}/>
             <Paper sx={{p:3}}>
                 <Box sx={{mb:2}}>
                     <Typography variant="h6">
@@ -218,16 +225,6 @@ const CrispsForm = ({type}) => {
                             </IconButton>
                         </Stack>
                     ))}
-                        <Button 
-                            size="medium" 
-                            variant="contained" 
-                            color="info" 
-                            onClick={handleAddFields}
-                            sx={{maxWidth:300, textAlign:"center"}}
-                            endIcon={<AddIcon />}
-                        >
-                                Tambah Kriteria
-                        </Button>
                     </Stack>
                     <Stack direction={'row'} spacing={4} justifyContent={'center'}>
                         <Button
@@ -253,4 +250,4 @@ const CrispsForm = ({type}) => {
     );
 }
 
-export default CrispsForm
+export default EditCrispsForm

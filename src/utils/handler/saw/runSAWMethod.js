@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "../../axios";
 
 const runSAWMethod = (id) => {
     return axios.get('/api/saw/'+id+'/method/create',{

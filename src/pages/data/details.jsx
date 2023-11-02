@@ -3,7 +3,7 @@ import { Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-import getDataID from "../../utils/handler/getDataID";
+import getDataID from "../../utils/handler/data/getDataID";
 
 const DataDetails = () =>{
     const {id} = useParams()

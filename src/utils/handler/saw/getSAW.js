@@ -1,4 +1,4 @@
-import axios from "../axios"
+import axios from "../../axios"
 
 const getSAW = () => {
     return axios.get('/api/saw',{

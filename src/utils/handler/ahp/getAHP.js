@@ -1,4 +1,4 @@
-import axios from "../axios"
+import axios from "../../axios"
 
 const getAHP = () => {
     return axios.get('/api/ahp',{

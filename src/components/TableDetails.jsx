@@ -1,6 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { saveAs } from 'file-saver';
 import {Box, Button, Collapse, IconButton, Paper, Stack, 
-    Table, TableBody, TableCell, TableContainer, TableRow, Typography, TableHead, Alert, Grid} from '@mui/material'
+    Table, TableBody, TableCell, TableContainer, TableRow, 
+    Typography, TableHead, Alert, Grid, Dialog, DialogActions} from '@mui/material'
+import DeleteDialogContent from "./DeleteDialogContent";
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddIcon from '@mui/icons-material/Add';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
@@ -9,12 +13,39 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Header from "./Header";
-import { useParams } from "react-router-dom";
-import runSAWMethod from "../utils/handler/runSAWMethod";
+import runSAWMethod from "../utils/handler/saw/runSAWMethod";
+import getDataFile from "../utils/handler/data/getDataFile";
+import getSAWFile from "../utils/handler/saw/getSAWFile";
+import deleteSAWCrisps from "../utils/handler/saw/deleteSAWCrisps";
+import deleteSAWCriteria from "../utils/handler/saw/deleteSAWCriteria";
 
 function SAWCrisp({criteria}) {
     const {id} = useParams()
     const [openCrisp, setOpenCrisp] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
+    }
+
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteSAWCrisps(id, criteria.id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+                window.location.reload()
+            })
+    }
     
     return(
         <React.Fragment>
@@ -67,20 +98,39 @@ function SAWCrisp({criteria}) {
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
-                                href={''}
+                                href={'/saw/'+id+'/criterias/'+criteria.id+'/crisps/edit'}
                             >
                                 Edit
                             </Button>
-                            <Button 
+                            <LoadingButton 
                                 variant="contained"
                                 aria-label="delete criteria" 
                                 size="small" 
                                 color="error"
                                 endIcon={<DeleteIcon />}
-                                href={''}
+                                loading={loadingDelete} 
+                                onClick={handleOpenDialog}
                             >
                                 Hapus
-                            </Button>
+                            </LoadingButton>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DeleteDialogContent 
+                                content={"Crisp"} 
+                                description={
+                                    "Semua Crisp dari kriteria akan dihapus"
+                                } />
+                                <DialogActions>
+                                <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                    Hapus
+                                </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
                         </Stack>                      
                     }
                 </TableCell>
@@ -140,7 +190,32 @@ function SAWCriteria({props}) {
 }
 
 function SAWComponents({props}){
+    const {id} = useParams()
     const [openCriteria, setOpenCriteria] = React.useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
+    }
+
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteSAWCriteria(id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+                window.location.reload()
+            })
+    }
 
     return(
         <React.Fragment>
@@ -170,6 +245,7 @@ function SAWComponents({props}){
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
+                                href={"/saw/"+props.id+"/criterias/edit"}
                             >
                                 Edit
                             </Button>
@@ -179,9 +255,29 @@ function SAWComponents({props}){
                                 size="small" 
                                 color="error"
                                 endIcon={<DeleteIcon />}
+                                onClick={handleOpenDialog}
                             >
                                 Hapus
                             </Button>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DeleteDialogContent
+                                    content={"Kriteria"}
+                                    description={
+                                        "Semua Kriteria pada SAW akan dihapus"
+                                    }
+                                />
+                                <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                        Hapus
+                                    </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
                         </Stack>
                         :
                         <Button 
@@ -658,7 +754,9 @@ const TableDetails = ({data, type}) => {
         : type === 'ahp' ? 'AHP Details'
         : 'SAW Details'
     )
+    const csvfile = useRef(null)
     const [loadingRun, setLoadingRun] = useState(false)
+    const [loadingDownload, setLoadingDownload] = useState(false)
 
     function check_data(){
         if(type==='data') return 1
@@ -685,14 +783,52 @@ const TableDetails = ({data, type}) => {
         }
     }
 
+    function downloadFile(){
+        setLoadingDownload(true)
+        if(type==='data'){
+            Promise.all([getDataFile(data.id)])
+                .then(function([response]){
+                    csvfile.current = new File([response.data], data.file_path, {
+                        type:'text/csv'
+                    })
+                    console.log(csvfile.current)
+                    saveAs(csvfile.current)
+                    setLoadingDownload(false)
+                }).catch(function(error){
+                    console.log(error.response)
+                    setLoadingDownload(false)
+                })
+        }
+        else if (type==='saw') {
+            if(data.result_path){
+                Promise.all([getSAWFile(data.id)])
+                .then(function([response]){
+                    csvfile.current = new File([response.data], data.result_path, {
+                        type:'text/csv'
+                    })
+                    console.log(response)
+                    saveAs(csvfile.current)
+                    setLoadingDownload(false)
+                }).catch(function(error){
+                    console.log(error.response)
+                    setLoadingDownload(false)
+                })
+            }
+        }
+    }
+    
     function handleRunMethod(){
         setLoadingRun(true)
-        Promise.all([runSAWMethod(data.id)])
+        if(type==='saw'){
+            Promise.all([runSAWMethod(data.id)])
             .then(function(response){
                 console.log(response)
                 setLoadingRun(false)
                 window.location.reload();
+            }).catch(function(error){
+                console.log(error.config)
             })
+        }
     }
 
     return(
@@ -785,9 +921,15 @@ const TableDetails = ({data, type}) => {
                                         {
                                             data.result_path === null ?
                                             <Alert severity="warning">Metode belum dijalankan</Alert> :
-                                            <Button startIcon={<CloudDownloadIcon />} color='info' variant="contained">
+                                            <LoadingButton 
+                                                startIcon={<CloudDownloadIcon />} 
+                                                color='info' 
+                                                variant="contained"
+                                                loading={loadingDownload}
+                                                onClick={downloadFile}
+                                            >
                                                 Download
-                                            </Button> 
+                                            </LoadingButton> 
                                         }
                                 </TableCell>
                             </TableRow>
@@ -850,9 +992,15 @@ const TableDetails = ({data, type}) => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell id="file">
-                                    <Button startIcon={<CloudDownloadIcon />} color='info' variant="contained">
+                                    <LoadingButton 
+                                        startIcon={<CloudDownloadIcon />} 
+                                        color='info'
+                                        variant="contained"
+                                        loading={loadingDownload}
+                                        onClick={downloadFile}
+                                    >
                                         Download
-                                    </Button> 
+                                    </LoadingButton> 
                                 </TableCell>
                             </TableRow>
                             : type === 'saw' ?

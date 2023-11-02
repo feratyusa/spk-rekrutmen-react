@@ -2,7 +2,7 @@ import { Box, Button} from '@mui/material';
 import Header from '../../components/Header'
 import Datalist from '../../components/Datalist';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
-import getData from '../../utils/handler/getData';
+import getData from '../../utils/handler/data/getData';
 import { useState } from 'react';
 import { useEffect } from 'react';
 

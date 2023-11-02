@@ -2,12 +2,12 @@ import { Box, Typography, Grid } from '@mui/material';
 import Header from '../../components/Header'
 import ItemCard from '../../components/ItemCard';
 import useAuth from '../../utils/useAuth'
-import getData from '../../utils/handler/getData'
-import getAHP from '../../utils/handler/getAHP';
-import getSAW from '../../utils/handler/getSAW';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
+import getData from '../../utils/handler/data/getData'
+import getAHP from '../../utils/handler/ahp/getAHP';
+import getSAW from '../../utils/handler/saw/getSAW';
 
 const Dashboard = () => {
     const {auth} = useAuth()

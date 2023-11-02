@@ -1,13 +1,21 @@
 import React from "react";
 import { useState } from "react";
 import {TableHead , Table, TableRow, TableCell, 
-    Stack, Paper, TableContainer, TablePagination, TableBody, Typography, IconButton, Alert} from "@mui/material";
+    Stack, Paper, TableContainer, TablePagination, 
+    TableBody, Typography, IconButton, Alert, 
+    Button} from "@mui/material";
+import {LoadingButton} from '@mui/lab'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useEffect } from "react";
 import { useRef } from "react";
-import getData from "../utils/handler/getData";
+import getData from "../utils/handler/data/getData";
+import deleteData from "../utils/handler/data/deleteData";
+import deleteSAW from "../utils/handler/saw/deleteSAW";
+import DeleteDialogContent from "./DeleteDialogContent";
 
 const TableHeader = () => {
     return (
@@ -31,6 +39,8 @@ const Datalist = ({data, type}) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [loading, setLoading] = useState(true)
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
     const counter = useRef(0)
 
     useEffect(() => {
@@ -42,6 +52,40 @@ const Datalist = ({data, type}) => {
         })
     }, [loading])
     
+    
+    const handleCloseDialog = () => {
+      setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+      setOpenDialog(true)
+    }
+
+    function handleDeleteData(id){
+      setLoadingDelete(true)
+      if(type==='data'){
+        Promise.all([deleteData(id)])
+          .then(function([response]){
+            console.log(response)
+            setLoadingDelete(false)
+            setOpenDialog(false)
+            window.location.reload()
+          }).catch(function(error){
+            console.log(error.config)
+          })
+      }
+      else if(type==='saw'){
+        Promise.all([deleteSAW(id)])
+          .then(function([response]){
+            console.log(response)
+            setLoadingDelete(false)
+            setOpenDialog(false)
+            window.location.reload()
+          }).catch(function([error]){
+            console.log(error.config)
+          })
+      }
+    }
   
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -84,37 +128,72 @@ const Datalist = ({data, type}) => {
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHeader />
+              <TableBody>
               {data
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((d) => {
                   return (
-                    <TableBody>
-                        <TableRow>
-                            <TableCell key='name'>  
-                                <Typography>
-                                    {d.name}
-                                </Typography>
-                            </TableCell>
-                            <TableCell key='created-at'>
-                                {d.created_at}
-                            </TableCell>
-                            <TableCell key='settings'>
-                                <Stack direction={'row'} spacing={2}>
-                                    <IconButton color="error"><DeleteIcon /></IconButton>
-                                    <IconButton color="warning"><EditIcon/></IconButton>
-                                    <IconButton color="info" 
-                                      href={ ( type === 'saw' ? '/saw/'+d.id 
-                                              : type === 'ahp' ? '/ahp/'+ d.id 
-                                              : '/data/'+d.id )}
-                                      >
-                                        <VisibilityIcon />
-                                    </IconButton>
-                                </Stack>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                  );
-                })}
+                    <TableRow key={d.id}>
+                        <TableCell>  
+                            <Typography>
+                                {d.name}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            {d.created_at}
+                        </TableCell>
+                        <TableCell>
+                            <Stack direction={'row'} spacing={2}>
+                                <IconButton color="error" onClick={handleOpenDialog}>
+                                  <DeleteIcon />
+                                </IconButton>
+                                <Dialog
+                                    open={openDialog}
+                                    onClose={handleCloseDialog}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                  <DeleteDialogContent 
+                                    content={type==='data' ? "Data" : type==='saw' ? "SAW" : "AHP"} 
+                                    description={
+                                      type==='data' ?
+                                      "Semua hasil yang terkait dengan Data ini juga akan ikut terhapus. Pastikan tidak \
+                                      ada metode SAW maupun AHP atau anda sudah menyimpan hasil SAW maupun AHP yang \
+                                      menggunakan data ini"
+                                      : type === 'saw' ?
+                                      "Semua hasil dari metode SAW juga akan ikut terhapus. Pastikan anda sudah menyimpan \
+                                      hasil SAW yang telah dibuat." 
+                                      :
+                                      "Semua hasil dari metode AHP juga akan ikut terhapus. Pastikan anda sudah menyimpan \
+                                      hasil AHP yang telah dibuat."
+                                    } />
+                                    <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData(d.id)}>
+                                        Hapus
+                                    </LoadingButton>
+                                    </DialogActions>
+                                </Dialog>
+                                <IconButton color="warning" 
+                                  href={type==='data' ? '/data/'+d.id+'/edit'
+                                        : type==='saw' ? '/saw/'+d.id+'/edit'
+                                        : '/ahp/'+d.id+'/edit'}
+                                >
+                                  <EditIcon/>
+                                </IconButton>
+                                <IconButton color="info" 
+                                  href={ ( type === 'saw' ? '/saw/'+d.id 
+                                          : type === 'ahp' ? '/ahp/'+ d.id 
+                                          : '/data/'+d.id )}
+                                  >
+                                    <VisibilityIcon />
+                                </IconButton>
+                            </Stack>
+                        </TableCell>
+                    </TableRow>
+                );
+              })}
+              </TableBody>
           </Table>
         </TableContainer>
         <TablePagination

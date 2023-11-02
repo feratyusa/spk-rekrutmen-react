@@ -21,7 +21,10 @@ import AHPCrispsImportanceForm from './pages/aplikasi/ahp/form/importance/crisps
 import Login from './pages/login';
 import Register from './pages/register';
 import RequireAuth from './components/RequireAuth';
-import { AuthProvider } from './context/AuthProvider';
+import EditData from './pages/data/form/edit';
+import EditSAW from './pages/aplikasi/saw/form/edit';
+import EditSAWCriterias from './pages/aplikasi/saw/form/criterias/edit';
+import EditSAWCrisps from './pages/aplikasi/saw/form/crisps/edit';
 
 const App = () => {
   return (
@@ -41,9 +44,13 @@ const App = () => {
             <Route path="saw/form" element={ <SAWForm /> }/>
             <Route path="ahp/form" element={ <AHPForm /> }/>
             <Route path='data/:id' element={ <DataDetails /> }/>
+            <Route path='data/:id/edit' element={ <EditData /> }/>
             <Route path='saw/:id' element={ <SAWDetails /> }/>
+            <Route path='saw/:id/edit' element={ <EditSAW /> }/>
             <Route path='saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
+            <Route path='saw/:id/criterias/edit' element={ <EditSAWCriterias /> }/>
             <Route path='saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
+            <Route path='saw/:id/criterias/:c_id/crisps/edit' element={ <EditSAWCrisps /> }/>
             <Route path='ahp/:id' element={ <AHPDetails /> }/>
             <Route path='ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
             <Route path='ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>

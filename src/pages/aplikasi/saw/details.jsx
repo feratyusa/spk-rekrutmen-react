@@ -1,11 +1,8 @@
-import { Paper } from "@mui/material"
-import React, { useContext } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { Paper } from "@mui/material"
 import TableDetails from "../../../components/TableDetails"
-import SAWDataExample from "../../../global/SAWDataExample"
-import { useState } from "react"
-import { useEffect } from "react"
-import getSAWID from "../../../utils/handler/getSAWID"
+import getSAWID from "../../../utils/handler/saw/getSAWID"
 
 const SAWDetails = () => {
     const { id } = useParams()

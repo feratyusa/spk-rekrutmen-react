@@ -1,12 +1,10 @@
+import { useState, useEffect, useRef } from 'react';
 import { Box, Button } from '@mui/material'
+import ScaleIcon from '@mui/icons-material/Scale';
 import Header from '../../../components/Header'
 import Datalist from '../../../components/Datalist'
-import ScaleIcon from '@mui/icons-material/Scale';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useRef } from 'react';
-import getSAW from '../../../utils/handler/getSAW';
-import getData from '../../../utils/handler/getData';
+import getSAW from '../../../utils/handler/saw/getSAW';
+import getData from '../../../utils/handler/data/getData';
 
 const SAW = () => {
     const [saw, setSAW] = useState()
