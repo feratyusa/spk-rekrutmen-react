@@ -1,18 +1,31 @@
+import { useState, useEffect, useRef } from "react";
 import { Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
 import TableDetails from "../../../components/TableDetails";
-import AHPDataExample from "../../../global/AHPDataExample";
-
-const ahp = AHPDataExample
+import getAHPID from "../../../utils/handler/ahp/getAHPID";
 
 const AHPDetails = () => {
     const { id } = useParams()
+    const [loading, setLoading] = useState(true)
+    const ahp = useRef(null)
 
-    const data = ahp.find(a => a.id === parseInt(id))
+    useEffect(() => {
+        Promise.all([getAHPID(id)])
+            .then(function([response]){
+                console.log(response.data)
+                ahp.current = response.data
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoading(false)
+            })
+    }, [])
+    
 
     return(
+        loading ? '' :
         <Paper>
-            <TableDetails data={data} type={'ahp'} />
+            <TableDetails data={ahp.current} type={'ahp'} />
         </Paper>
     );
 }

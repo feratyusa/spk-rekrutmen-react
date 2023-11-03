@@ -18,6 +18,12 @@ import getDataFile from "../utils/handler/data/getDataFile";
 import getSAWFile from "../utils/handler/saw/getSAWFile";
 import deleteSAWCrisps from "../utils/handler/saw/deleteSAWCrisps";
 import deleteSAWCriteria from "../utils/handler/saw/deleteSAWCriteria";
+import deleteAHPCriterias from "../utils/handler/ahp/deleteAHPCriterias";
+import deleteAHPCrisps from "../utils/handler/ahp/deleteAHPCrisps";
+import deleteAHPCriteriaImportance from "../utils/handler/ahp/deleteAHPCriteriaImportance";
+import deleteAHPCrispsImportance from "../utils/handler/ahp/deleteAHPCrispsImportance";
+import runAHPMethod from "../utils/handler/ahp/runAHPMethod";
+import getAHPFile from "../utils/handler/ahp/getAHPFile";
 
 function SAWCrisp({criteria}) {
     const {id} = useParams()
@@ -94,7 +100,7 @@ function SAWCrisp({criteria}) {
                         <Stack direction={'row'} spacing={2}>
                             <Button 
                                 variant="contained"
-                                aria-label="edit criteria" 
+                                aria-label="edit saw crisps" 
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
@@ -182,7 +188,7 @@ function SAWCriteria({props}) {
             </TableHead>
             <TableBody>
             {props.map((criteria) => (
-                <SAWCrisp criteria={criteria} />
+                <SAWCrisp criteria={criteria} key={criteria.id}/>
             ))}
             </TableBody>
         </Table>
@@ -241,7 +247,7 @@ function SAWComponents({props}){
                             </Button>
                             <Button 
                                 variant="contained"
-                                aria-label="edit criteria" 
+                                aria-label="edit saw criteria" 
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
@@ -305,129 +311,68 @@ function SAWComponents({props}){
     );
 }
 
-function AHPCrisp({criteria}){
-    const {id} = useParams()
-    const [openCrisp, setOpenCrisp] = useState(false);
-    
-    return(
-        <React.Fragment>
-            <TableRow key={criteria.id} sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell component="th" scope="row">
-                    {criteria.name}
-                </TableCell>
-                <TableCell>
-                    {
-                        criteria.crisp_type === 0 ? 'Number'
-                        : 'String'
-                    }
-                </TableCell>
-                <TableCell>
-                    <IconButton 
-                        variant="contained"
-                        color="info"
-                        aria-label="expand row" 
-                        size="small" 
-                        disabled={ !criteria.hasOwnProperty('crisps') || criteria.crisps.length === 0 ? true : false}
-                        onClick={() => setOpenCrisp(!openCrisp)}
-                    >
-                        {openCrisp ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell>
-                    {
-                        criteria.crisps.length === 0 ?
-                        <Button 
-                            variant="contained"
-                            aria-label="expand row" 
-                            size="small" 
-                            endIcon={<AddIcon />}
-                            href={'/ahp/'+ id + '/criterias/'+ criteria.id +'/crisps/form'}
-                        >
-                            Buat Crisps
-                        </Button> :
-                        <Stack direction={'row'} spacing={2}>
-                            <Button 
-                                variant="contained"
-                                aria-label="edit criteria" 
-                                size="small" 
-                                color="warning"
-                                endIcon={<EditIcon />}
-                                href={''}
-                            >
-                                Edit
-                            </Button>
-                            <Button 
-                                variant="contained"
-                                aria-label="delete criteria" 
-                                size="small" 
-                                color="error"
-                                endIcon={<DeleteIcon />}
-                                href={''}
-                            >
-                                Hapus
-                            </Button>
-                        </Stack>                      
-                    }
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={openCrisp} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Table size="small" aria-label="criteria-list">
-                                <TableHead>
-                                <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Details</TableCell>
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {criteria.crisps.map((crisp) => (
-                                    <TableRow key={crisp.id}>
-                                    <TableCell component="th" scope="row">
-                                        {crisp.name}
-                                    </TableCell>
-                                    <TableCell>{crisp.details}</TableCell>
-                                    </TableRow>
-                                ))}
-                                </TableBody>
-                            </Table>
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
-        </React.Fragment>
-    );
-}
-
 function AHPCrispsImportance({criteria}){
     const {id} = useParams()
-    const [openCriteria, setOpenCriteria] = React.useState(false);
+    const [openCriteria, setOpenCriteria] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
 
-    let crisps = []
-    let status = 0
-    for (let index = 0; index < criteria.crisps.length; index++) {
-        if(criteria.crisps[index].importance.length === 0){
-            status = -1
-            break
-        }    
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
     }
 
-    if(status === 0){
-        for (let i = 0; i < criteria.crisps.length-1; i++) {
-            for (let j = 0; j < criteria.crisps.length-1-i; j++) {
-                crisps.push(
-                    {
-                        ca:criteria.crisps[i].name, 
-                        cb:criteria.crisps[i+j+1].name, 
-                        imp:criteria.crisps[i].importance[i+j].importance
-                    }
-                )
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteAHPCrispsImportance(id, criteria.id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+            })
+    }
+
+    const crisps = useRef()
+    const status = useRef(0)
+
+    useEffect(() => {
+        if(criteria.ahp_crisp.length === 0) status.current = -1
+        else{
+            for (let index = 0; index < criteria.ahp_crisp.length; index++) {
+                if(criteria.ahp_crisp[index].importance.length === 0){
+                    status.current = -1
+                    break
+                }    
             }
         }
-    }
-
+        crisps.current = []
+        if(status.current === 0){
+            let inc = 0
+            for (let i = 0; i < criteria.ahp_crisp.length-1; i++) {
+                for (let j = 0; j < criteria.ahp_crisp.length-1-i; j++) {
+                    crisps.current.push(
+                        {
+                            ca:criteria.ahp_crisp[i].name, 
+                            cb:criteria.ahp_crisp[i+j+1].name, 
+                            imp:criteria.ahp_crisp[i].importance[j+inc].importance
+                        }
+                    )
+                }
+                inc += 1
+            }
+        }
+        setLoading(false)
+    }, [])
+    
     return(
+        loading ? '' :
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
@@ -443,7 +388,7 @@ function AHPCrispsImportance({criteria}){
                 </TableCell>           
                 <TableCell>
                     {
-                        status === 0 ?
+                        status.current === 0 ?
                         <Stack direction={'row'} spacing={2}>
                             <Button 
                                 variant="contained"
@@ -457,10 +402,11 @@ function AHPCrispsImportance({criteria}){
                             </Button>
                             <Button 
                                 variant="contained"
-                                aria-label="edit criteria" 
+                                aria-label="edit crisps importance" 
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
+                                href={'/ahp/'+id+'/criterias/'+criteria.id+'/crisps/importance/edit'}
                             >
                                 Edit
                             </Button>
@@ -470,9 +416,27 @@ function AHPCrispsImportance({criteria}){
                                 size="small" 
                                 color="error"
                                 endIcon={<DeleteIcon />}
+                                onClick={handleOpenDialog}
                             >
                                 Hapus
                             </Button>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                            >
+                                <DeleteDialogContent
+                                    content={'Skala Crisps'} 
+                                    description={
+                                        'Semua skala crisps pada kriteria akan dihapus'
+                                    }
+                                />
+                                <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                        Hapus
+                                    </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
                         </Stack>
                         :
                         <Button 
@@ -481,6 +445,7 @@ function AHPCrispsImportance({criteria}){
                             size="small" 
                             endIcon={<AddIcon />}
                             href={'/ahp/'+ id + '/criterias/'+criteria.id+'/crisps/importance/form'}
+                            disabled={criteria.ahp_crisp.length === 0 ? true : false}
                         >
                             Buat Skala Crisps
                         </Button>
@@ -500,7 +465,7 @@ function AHPCrispsImportance({criteria}){
                             </TableRow>
                             </TableHead>
                             <TableBody>
-                            {crisps.map((crisp, index) => (
+                            {crisps.current.map((crisp, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{crisp.ca}</TableCell>
                                     <TableCell>{crisp.cb}</TableCell>
@@ -517,132 +482,64 @@ function AHPCrispsImportance({criteria}){
     );
 }
 
-function AHPCriteria({props, type}) {
-    return(
-        <Table size="medium" aria-label="criteria-list">
-            <TableHead>
-            <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Criteria Type</TableCell>
-                {
-                    type === 'crisps_importance' ?
-                    <TableCell>Crisps Importance</TableCell> 
-                    :
-                    <TableCell>Crisps</TableCell>                       
-                }
-                <TableCell></TableCell>
-            </TableRow>
-            </TableHead>
-            {
-                type === 'crisps_importance' ?
-                <TableBody>
-                {props.map((criteria) => (                    
-                    <AHPCrispsImportance criteria={criteria} />             
-                ))}
-                </TableBody>
-                :
-                <TableBody>
-                {props.map((criteria) => (                    
-                    <AHPCrisp criteria={criteria} />             
-                ))}
-                </TableBody>
-            }
-        </Table>
-    );
-}
-
-function AHPComponents({props, type}){
-    const [openCriteria, setOpenCriteria] = React.useState(false);
-
-    return(
-        <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
-                    <Typography fontWeight={'bold'}>
-                        Criterias
-                    </Typography>
-                </TableCell>                
-                <TableCell>
-                    {
-                        props.criterias.length !== 0 ?
-                        <Stack direction={'row'} spacing={2}>
-                            <Button 
-                                variant="contained"
-                                aria-label="expand row" 
-                                size="small" 
-                                onClick={() => setOpenCriteria(!openCriteria)}
-                                color="info"
-                                endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                            >
-                                Tampil
-                            </Button>
-                            <Button 
-                                variant="contained"
-                                aria-label="edit criteria" 
-                                size="small" 
-                                color="warning"
-                                endIcon={<EditIcon />}
-                            >
-                                Edit
-                            </Button>
-                            <Button 
-                                variant="contained"
-                                aria-label="delete criteria" 
-                                size="small" 
-                                color="error"
-                                endIcon={<DeleteIcon />}
-                            >
-                                Hapus
-                            </Button>
-                        </Stack>
-                        :
-                        <Button 
-                            variant="contained"
-                            aria-label="expand row" 
-                            size="small" 
-                            endIcon={<AddIcon />}
-                            href={'/ahp/'+ props.id + '/criterias/form'}
-                        >
-                            Buat
-                        </Button>
-                    }
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                <Collapse in={openCriteria} timeout="auto" unmountOnExit>
-                    <Box sx={{ margin: 1}}>
-                        <AHPCriteria props={props.criterias}/>
-                    </Box>
-                </Collapse>
-                </TableCell>
-            </TableRow>
-        </React.Fragment>
-    );
-}
-
 function AHPImportance({props, type}){
     const {id} = useParams()
-    const [openCriteria, setOpenCriteria] = React.useState(false);
+    const [openCriteria, setOpenCriteria] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
 
-    let criterias = []
-    let status = (props.length === 0 ? -1 : 0)
-    for (let index = 0; index < props.length; index++) {
-        if(props[index].importance.length === 0){
-            status = -1
-            break
-        }    
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
     }
 
-    if(type === 'criteria' && status === 0){
-        for (let i = 0; i < props.length-1; i++) {
-            for (let j = 0; j < props.length-1-i; j++) {
-                criterias.push({ca:props[i].name, cb:props[i+j+1].name, imp:props[i].importance[i+j].importance})
+    const criterias = useRef()
+    const status = useRef(props.length === 0 ? -1 : 0)
+
+    useEffect(() => {
+        criterias.current = []
+        for (let index = 0; index < props.length; index++) {
+            if(props[index].importance.length === 0){
+                status.current = -1
+                break
+            }    
+        }
+        if(type === 'criteria' && status.current === 0){
+            let inc = 0
+            for (let i = 0; i < props.length-1; i++) {
+                for (let j = 0; j < props.length-1-i; j++) {
+                    criterias.current.push({ca:props[i].name, 
+                        cb:props[i+j+1].name, 
+                        imp:props[i].importance[j+inc]?.importance})
+                }
+                inc += 1
             }
         }
-    }
+        setLoading(false)
+    }, [])
 
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteAHPCriteriaImportance(id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                if(error.response) console.log(error.resposne)
+                else console.log(error.request)
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+                window.location.reload()
+            })
+    }
+    
     return(
+        loading ? '' :
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
@@ -665,11 +562,10 @@ function AHPImportance({props, type}){
                             onClick={() => setOpenCriteria(!openCriteria)}
                             color="info"
                             endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                            disabled={status === -1 ? true : false}
                         >
                             Tampil
                         </Button>
-                        : status === 0 ?
+                        : status.current === 0 ?
                         <Stack direction={'row'} spacing={2}>
                             <Button 
                                 variant="contained"
@@ -687,6 +583,7 @@ function AHPImportance({props, type}){
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
+                                href={'/ahp/'+id+'/criterias/importance/edit'}
                             >
                                 Edit
                             </Button>
@@ -696,9 +593,27 @@ function AHPImportance({props, type}){
                                 size="small" 
                                 color="error"
                                 endIcon={<DeleteIcon />}
+                                onClick={handleOpenDialog}
                             >
                                 Hapus
                             </Button>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                            >
+                                <DeleteDialogContent
+                                    content={"Skala Kriteria"}
+                                    description={
+                                        "Semua skala pada kriteria akan dihapus"
+                                    }
+                                />
+                                <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                        Hapus
+                                    </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
                         </Stack>
                         :
                         <Button 
@@ -729,7 +644,7 @@ function AHPImportance({props, type}){
                             </TableRow>
                             </TableHead>
                             <TableBody>
-                            {criterias.map((criteria, index) => (
+                            {criterias.current.map((criteria, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{criteria.ca}</TableCell>
                                     <TableCell>{criteria.cb}</TableCell>
@@ -740,6 +655,290 @@ function AHPImportance({props, type}){
                         </Table> :
                         <AHPCriteria props={props} type={'crisps_importance'}/>
                     }
+                    </Box>
+                </Collapse>
+                </TableCell>
+            </TableRow>
+        </React.Fragment>
+    );
+}
+
+function AHPCrisp({criteria}){
+    const {id} = useParams()
+    const [openCrisp, setOpenCrisp] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
+    }
+
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteAHPCrisps(id, criteria.id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+                window.location.reload()
+            })
+    }
+    
+    return(
+        <React.Fragment>
+            <TableRow key={criteria.id} sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell component="th" scope="row">
+                    {criteria.name}
+                </TableCell>
+                <TableCell>
+                    {
+                        criteria.crisp_type === 0 ? 'Number'
+                        : 'String'
+                    }
+                </TableCell>
+                <TableCell>
+                    <IconButton 
+                        variant="contained"
+                        color="info"
+                        aria-label="expand row" 
+                        size="small" 
+                        disabled={ criteria.ahp_crisp.length === 0 ? true : false}
+                        onClick={() => setOpenCrisp(!openCrisp)}
+                    >
+                        {openCrisp ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell>
+                    {
+                        criteria.ahp_crisp.length === 0 ?
+                        <Button 
+                            variant="contained"
+                            aria-label="expand row" 
+                            size="small" 
+                            endIcon={<AddIcon />}
+                            href={'/ahp/'+ id + '/criterias/'+ criteria.id +'/crisps/form'}
+                        >
+                            Buat Crisps
+                        </Button> :
+                        <Stack direction={'row'} spacing={2}>
+                            <Button 
+                                variant="contained"
+                                aria-label="edit criteria" 
+                                size="small" 
+                                color="warning"
+                                endIcon={<EditIcon />}
+                                href={'/ahp/'+id+'/criterias/'+criteria.id+'/crisps/edit'}
+                            >
+                                Edit
+                            </Button>
+                            <Button 
+                                variant="contained"
+                                aria-label="delete criteria" 
+                                size="small" 
+                                color="error"
+                                endIcon={<DeleteIcon />}
+                                onClick={handleOpenDialog}
+                            >
+                                Hapus
+                            </Button>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                            >
+                                <DeleteDialogContent
+                                    content={"AHP Crisps"}
+                                    description={
+                                        "Semua crisps pada kriteria akan dihapus"
+                                    }
+                                />
+                                <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                        Hapus
+                                    </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
+                        </Stack>                      
+                    }
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={openCrisp} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                            <Table size="small" aria-label="criteria-list">
+                                <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Details</TableCell>
+                                </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                {criteria.ahp_crisp.map((crisp) => (
+                                    <TableRow key={crisp.id}>
+                                        <TableCell component="th" scope="row">
+                                            {crisp.name}
+                                        </TableCell>
+                                        <TableCell>{crisp.detail}</TableCell>
+                                    </TableRow>
+                                ))}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+        </React.Fragment>
+    );
+}
+
+function AHPCriteria({props, type}) {
+    return(
+        <Table size="medium" aria-label="criteria-list">
+            <TableHead>
+            <TableRow>
+                <TableCell>Kriteria</TableCell>
+                <TableCell>Tipe Kriteria</TableCell>
+                {
+                    type === 'crisps_importance' ?
+                    <TableCell>Crisps Importance</TableCell> 
+                    :
+                    <TableCell>Crisps</TableCell>                       
+                }
+                <TableCell></TableCell>
+            </TableRow>
+            </TableHead>
+            {
+                type === 'crisps_importance' ?
+                <TableBody>
+                {props.map((criteria) => (                    
+                    <AHPCrispsImportance criteria={criteria} key={criteria.id}/>             
+                ))}
+                </TableBody>
+                :
+                <TableBody>
+                {props.map((criteria) => (                    
+                    <AHPCrisp criteria={criteria} key={criteria.id} />             
+                ))}
+                </TableBody>
+            }
+        </Table>
+    );
+}
+
+function AHPComponents({props, type}){
+    const {id} = useParams()
+    const [openCriteria, setOpenCriteria] = React.useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [loadingDelete, setLoadingDelete] = useState(false)
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false)
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true)
+    }
+
+    function handleDeleteData(){
+        setLoadingDelete(true)
+        Promise.all([deleteAHPCriterias(id)])
+            .then(function([response]){
+                console.log(response)
+            }).catch(function([error]){
+                console.log(error.config)
+            }).finally(function(){
+                setLoadingDelete(false)
+                setOpenDialog(false)
+                window.location.reload()
+            })
+    }
+
+    return(
+        <React.Fragment>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <Typography fontWeight={'bold'}>
+                        Kriteria
+                    </Typography>
+                </TableCell>                
+                <TableCell>
+                    {
+                        props.ahp_criteria.length !== 0 ?
+                        <Stack direction={'row'} spacing={2}>
+                            <Button 
+                                variant="contained"
+                                aria-label="expand row" 
+                                size="small" 
+                                onClick={() => setOpenCriteria(!openCriteria)}
+                                color="info"
+                                endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            >
+                                Tampil
+                            </Button>
+                            <Button 
+                                variant="contained"
+                                aria-label="edit criteria" 
+                                size="small" 
+                                color="warning"
+                                endIcon={<EditIcon />}
+                                href={'/ahp/'+id+'/criterias/edit'}
+                            >
+                                Edit
+                            </Button>
+                            <Button 
+                                variant="contained"
+                                aria-label="delete criteria" 
+                                size="small" 
+                                color="error"
+                                endIcon={<DeleteIcon />}
+                                onClick={handleOpenDialog}
+                            >
+                                Hapus
+                            </Button>
+                            <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                            >
+                                <DeleteDialogContent
+                                    content={"Kriteria AHP"}
+                                    description={
+                                        "Semua kriteria pada AHP akan dihapus"
+                                    }
+                                />
+                                <DialogActions>
+                                    <Button onClick={handleCloseDialog}>Batalkan</Button>
+                                    <LoadingButton loading={loadingDelete} onClick={(event) => handleDeleteData()}>
+                                        Hapus
+                                    </LoadingButton>
+                                </DialogActions>
+                            </Dialog>
+                        </Stack>
+                        :
+                        <Button 
+                            variant="contained"
+                            aria-label="expand row" 
+                            size="small" 
+                            endIcon={<AddIcon />}
+                            href={'/ahp/'+ props.id + '/criterias/form'}
+                        >
+                            Buat
+                        </Button>
+                    }
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <Collapse in={openCriteria} timeout="auto" unmountOnExit>
+                    <Box sx={{ margin: 1}}>
+                        <AHPCriteria props={props.ahp_criteria}/>
                     </Box>
                 </Collapse>
                 </TableCell>
@@ -768,15 +967,14 @@ const TableDetails = ({data, type}) => {
             return 0
         }
         if(type==='ahp'){
-            if(data.criterias.length === 0) return -4
-            for (let index = 0; index < data.criterias.length; index++) {
-                if(data.criterias[index].crisps.length === 0) return -3
+            if(data.ahp_criteria.length === 0) return -4
+            for (let index = 0; index < data.ahp_criteria.length; index++) {
+                if(data.ahp_criteria[index].ahp_crisp.length === 0) return -3
             }
-            for (let index = 0; index < data.criterias.length; index++) {
-                console.log(data.criterias[index].importance.length)
-                if(data.criterias[index].importance.length === 0) return -2
-                for (let j = 0; j < data.criterias[index].crisps.length; j++) {
-                    if(data.criterias[index].crisps[j].importance.length === 0) return -1
+            for (let index = 0; index < data.ahp_criteria.length; index++) {
+                if(data.ahp_criteria[index].importance.length === 0) return -2
+                for (let j = 0; j < data.ahp_criteria[index].ahp_crisp.length; j++) {
+                    if(data.ahp_criteria[index].ahp_crisp[j].importance.length === 0) return -1
                 }
             }
             return 0
@@ -815,19 +1013,45 @@ const TableDetails = ({data, type}) => {
                 })
             }
         }
+        else if(type==='ahp'){
+            if(data.result_path){
+                Promise.all([getAHPFile(data.id)])
+                .then(function([response]){
+                    csvfile.current = new File([response.data], data.result_path, {
+                        type:'text/csv'
+                    })
+                    console.log(response)
+                    saveAs(csvfile.current)
+                    setLoadingDownload(false)
+                }).catch(function(error){
+                    console.log(error.response)
+                    setLoadingDownload(false)
+                })
+            }
+        }
     }
     
     function handleRunMethod(){
         setLoadingRun(true)
         if(type==='saw'){
             Promise.all([runSAWMethod(data.id)])
-            .then(function(response){
-                console.log(response)
-                setLoadingRun(false)
-                window.location.reload();
-            }).catch(function(error){
-                console.log(error.config)
-            })
+                .then(function(response){
+                    console.log(response)
+                    setLoadingRun(false)
+                    window.location.reload();
+                }).catch(function(error){
+                    console.log(error.config)
+                })
+        }
+        else if(type==='ahp'){
+            Promise.all([runAHPMethod(data.id)])
+                .then(function(response){
+                    console.log(response)
+                    setLoadingRun(false)
+                    window.location.reload();
+                }).catch(function(error){
+                    console.log(error.config)
+                })
         }
     }
 
@@ -1008,8 +1232,8 @@ const TableDetails = ({data, type}) => {
                             :
                             <React.Fragment>
                                 <AHPComponents props={data}/>
-                                <AHPImportance props={data.criterias} type={'criteria'}/>
-                                <AHPImportance props={data.criterias} type={'crisps'} />
+                                <AHPImportance props={data.ahp_criteria} type={'criteria'}/>
+                                <AHPImportance props={data.ahp_criteria} type={'crisps'} />
                             </React.Fragment>
                         }
                     </TableBody>

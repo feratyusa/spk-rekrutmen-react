@@ -7,12 +7,12 @@ import AddIcon from '@mui/icons-material/Add';
 import AHPDataExample from "../global/AHPDataExample";
 import getSAWID from "../utils/handler/saw/getSAWID";
 import axios, { getCookie } from "../utils/axios";
-
-const ahp = AHPDataExample
+import getAHPID from "../utils/handler/ahp/getAHPID";
 
 const CrispsForm = ({type}) => {
     const {id, c_id} = useParams()
     const criteria = useRef(null)
+    const data = useRef(null)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -27,7 +27,18 @@ const CrispsForm = ({type}) => {
                 console.log(error.config)
             })
       }
-    }, [loading])
+      else if(type==='ahp'){
+        Promise.all([getAHPID(id)])
+            .then(function([response]){
+                console.log(response)
+                criteria.current = response.data.ahp_criteria.find(c => c.id === parseInt(c_id))
+                console.log(criteria)
+                setLoading(false)
+            }).catch(function(error){
+                console.log(error.config)
+            })
+      }
+    }, [])
     
     const crisps = (
         type === 'saw' ? {name: "", comparator:"", num1: "", num2: "", details:"", weight: ""}
@@ -93,8 +104,8 @@ const CrispsForm = ({type}) => {
             }
         }
         console.log(inputs);
+        const data = {name:[], detail:[], weight: []}
         if(type === 'saw'){
-            const data = {name:[], detail:[], weight: []}
             for (let index = 0; index < inputs.length; index++) {
                 data.name.push(inputs[index].name)
                 data.detail.push(inputs[index].details)
@@ -109,6 +120,25 @@ const CrispsForm = ({type}) => {
             }).then(function(response){
                 console.log(response)
                 navigate('/saw/'+id)
+            }).catch(function(error){
+                if(error.response) console.log(error.response)
+                console.log(error.config)
+            })
+        }
+        else if(type==='ahp'){
+            for (let index = 0; index < inputs.length; index++) {
+                data.name.push(inputs[index].name)
+                data.detail.push(inputs[index].details)
+            }
+            axios.post('/api/ahp/'+id+'/criterias/'+c_id+'/crisps/create', data,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials: true
+            }).then(function(response){
+                console.log(response)
+                navigate('/ahp/'+id)
             }).catch(function(error){
                 if(error.response) console.log(error.response)
                 console.log(error.config)

@@ -20,7 +20,7 @@ const SAW = () => {
             setSAW(saw.data)
             setLoading(false)
         })
-    }, [loading])
+    }, [])
     
     return (
         loading ? '' :

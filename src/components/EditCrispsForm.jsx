@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AHPDataExample from "../global/AHPDataExample";
 import getSAWID from "../utils/handler/saw/getSAWID";
 import axios, { getCookie } from "../utils/axios";
+import getAHPID from "../utils/handler/ahp/getAHPID";
 
 const ahp = AHPDataExample
 
@@ -77,8 +78,8 @@ const EditCrispsForm = ({type}) => {
             }
         }
         console.log(inputs);
+        const data = {name:[], detail:[], weight: []}
         if(type === 'saw'){
-            const data = {name:[], detail:[], weight: []}
             for (let index = 0; index < inputs.length; index++) {
                 data.name.push(inputs[index].name)
                 data.detail.push(inputs[index].details)
@@ -93,6 +94,25 @@ const EditCrispsForm = ({type}) => {
             }).then(function(response){
                 console.log(response)
                 navigate('/saw/'+id)
+            }).catch(function(error){
+                if(error.response) console.log(error.response)
+                console.log(error.config)
+            })
+        }
+        else if(type==='ahp'){
+            for (let index = 0; index < inputs.length; index++) {
+                data.name.push(inputs[index].name)
+                data.detail.push(inputs[index].details)
+            }
+            axios.put('/api/ahp/'+id+'/criterias/'+c_id+'/crisps/update', data,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials: true
+            }).then(function(response){
+                console.log(response)
+                navigate('/ahp/'+id)
             }).catch(function(error){
                 if(error.response) console.log(error.response)
                 console.log(error.config)
@@ -131,7 +151,27 @@ const EditCrispsForm = ({type}) => {
                     setLoading(false)
                 })
         }
-    }, [loading])
+        else if(type==='ahp'){
+            Promise.all([getAHPID(id)])
+                .then(function([response]){
+                    console.log(response.data)
+                    criteria.current = response.data.ahp_criteria.find(c => c.id === parseInt(c_id))
+                    const ahp_crisp = criteria.current.ahp_crisp
+                    console.log(ahp_crisp)
+                    const inputs = []
+                    for (let index = 0; index < ahp_crisp.length; index++) {
+                        const detail = ahp_crisp[index].detail.split(",")
+                        const c = {name:ahp_crisp[index].name, comparator:parseInt(detail[0]) ? parseInt(detail[0]) : "0", 
+                            num1:detail[1]? detail[1] : "", num2:detail[2]? detail[2] : "", details:detail[0]}
+                        inputs.push(c)
+                    }
+                    setInputFields(inputs)
+                    console.log(inputFields)
+                }).finally(function(){
+                    setLoading(false)
+                })
+        }
+    }, [])
     
     return(
         loading ? '' :
@@ -220,9 +260,6 @@ const EditCrispsForm = ({type}) => {
                                 />
                                 : ''
                             }
-                            <IconButton size="medium" variant="contained" color="error" onClick={() => handleRemoveFields(index)}>
-                                <CloseIcon />
-                            </IconButton>
                         </Stack>
                     ))}
                     </Stack>

@@ -11,6 +11,7 @@ import getData from "../utils/handler/data/getData";
 import getDataID from "../utils/handler/data/getDataID";
 import getDataFile from "../utils/handler/data/getDataFile";
 import getSAWID from "../utils/handler/saw/getSAWID";
+import getAHPID from "../utils/handler/ahp/getAHPID";
 
 const EditForm = ({type}) => {
     const {id} = useParams()
@@ -37,7 +38,7 @@ const EditForm = ({type}) => {
 
     function handleChangeLabel(event, newValue) {
         const values = inputField
-        values.data_id = newValue.id
+        values.data_id = newValue ? newValue.id : null
         setInputField(values)
     }
 
@@ -63,26 +64,26 @@ const EditForm = ({type}) => {
                 })
         }
         else{
-            Promise.all([getSAWID(id), getData()])
-                .then(function([saw, listData]){
-                    console.log(saw.data)
+            Promise.all([type==='saw' ? getSAWID(id) : getAHPID(id), getData()])
+                .then(function([method, listData]){
+                    console.log(method.data)
                     console.log(listData.data)
                     const values = inputField
-                    values.name = saw.data.name
-                    values.description = saw.data.description ? saw.data.description : null
-                    values.data_id = saw.data.data_id
+                    values.name = method.data.name
+                    values.description = method.data.description ? method.data.description : null
+                    values.data_id = method.data.data_id
                     setInputField(values)
-                    dataDefaultValue.current = listData.data.find(o => o.id === saw.data.data_id)
+                    dataDefaultValue.current = listData.data.find(o => o.id === method.data.data_id)
                     setData(listData.data)
                     console.log(data)
                     console.log(dataDefaultValue.current)
                     setLoading(false)
-                }).catch(function([saw, data]){
-                    console.log(saw.config)
+                }).catch(function([method, data]){
+                    console.log(method.config)
                     console.log(data.config)
                 })
         }
-    }, [loading])
+    }, [])
     
 
     const handleSubmit = (e) => {
@@ -111,21 +112,24 @@ const EditForm = ({type}) => {
                 console.log(error.config)
             })
         }
-        else if(type==='saw'){
+        else{
             const data = {
                 name: inputField.name,        
                 description: inputField.description,
                 data_id: inputField.data_id
             }
-            axios.put('/api/saw/'+id+'/update', data,{
-                headers:{
-                    'Content-Type': 'multipart/form-data',
-                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
-                },
-                withCredentials:true
+            axios.put(type==='saw' ? '/api/saw/'+id+'/update' : '/api/ahp/'+id+'/update', 
+                data,
+                {
+                    headers:{
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                    },
+                    withCredentials:true
             }).then(function(response){
                 console.log(response.data)
-                navigate('/saw/'+response.data.id)
+                if(type==='saw') navigate('/saw/'+response.data.id)
+                else navigate('/ahp/'+response.data.id)
             }).catch(function(error){
                 if(error.response){
                     console.log(error.response)
@@ -136,13 +140,12 @@ const EditForm = ({type}) => {
                 console.log(error.config)
             })
         }
-        
     }
 
     return(
         loading ? '' :
         <Box>
-            <Header title={'Edit Data'} />
+            <Header title={type==='data' ? 'Edit Data' : type==='saw' ? 'Edit SAW' : 'Edit AHP'} />
             <Box
                 sx={{
                     p:3,

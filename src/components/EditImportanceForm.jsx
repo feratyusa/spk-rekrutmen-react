@@ -5,7 +5,7 @@ import Header from "./Header";
 import getAHPID from "../utils/handler/ahp/getAHPID";
 import axios, {getCookie} from "../utils/axios";
 
-const ImportanceForm = ({type}) => {
+const EditImportanceForm = ({type}) => {
     const {id, c_id} = useParams()
     const criterias = useRef(null)
     const criterias_name = useRef([])
@@ -28,7 +28,7 @@ const ImportanceForm = ({type}) => {
         }
         console.log(outputs);
         if(type!=='crisps'){
-            axios.post('/api/ahp/'+id+'/criterias/importance/create',outputs,{
+            axios.put('/api/ahp/'+id+'/criterias/importance/update', outputs,{
                 headers:{
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': getCookie("csrf_access_token")
@@ -40,7 +40,8 @@ const ImportanceForm = ({type}) => {
             })
         }
         else if(type==='crisps'){
-            axios.post('/api/ahp/'+id+'/criterias/'+c_id+'/crisps/importance/create',outputs,{
+            console.log('Edit Crisps Importance')
+            axios.put('/api/ahp/'+id+'/criterias/'+c_id+'/crisps/importance/update', outputs,{
                 headers:{
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': getCookie("csrf_access_token")
@@ -58,26 +59,32 @@ const ImportanceForm = ({type}) => {
             .then(function([response]){
                 const ahp = response.data
                 const c = (type==='crisps' ? ahp.ahp_criteria.find(c => c.id === parseInt(c_id)) : ahp.ahp_criteria)
+                const imp = []
                 criterias.current = (type==='crisps' ? c.ahp_crisp : c)
+                criterias_name.current = []
+                let inc = 0
                 for (let index = 0; index < criterias.current.length-1; index++) {
                     for (let j = 0; j < criterias.current.length-1-index; j++) {
-                        criterias_name.current.push({ca: criterias.current[index].name, cb: criterias.current[index+j+1].name, importance: ""})
+                        criterias_name.current.push({ca: criterias.current[index].name, 
+                                                    cb: criterias.current[index+j+1].name, 
+                                                    importance: criterias.current[index].importance[j+inc].importance})                                                                         
+                        imp.push(criterias.current[index].importance[j+inc].importance+"")
                     }
+                    inc += 1
                 }
-                console.log(ahp)
-                console.log(criterias.current)
-                console.log(criterias_name.current)
-                setLoading(false)
+                setInputFields(imp)
             }).catch(function([error]){
                 console.log(error.config)
+            }).finally(function(){
+                setLoading(false)
             })
     }, [])
-    
+    console.log(inputFields)
     
     return(
         loading ? '' :
         <Box>
-            <Header title={type==='criteria' ? 'AHP Criterias Importance Form' : 'AHP Crisps Importance Form'}/>
+            <Header title={type==='crisps' ? 'AHP Crisps Importance Edit' : 'AHP Criterias Importance Edit'}/>
             <Paper sx={{p:3}}>
                 <form onSubmit={handleSubmit}>
                     {criterias_name.current.map((criteria, index) => (
@@ -101,6 +108,7 @@ const ImportanceForm = ({type}) => {
                                 name="importance"
                                 label="Skala"
                                 variant="filled"
+                                defaultValue={criteria.importance}
                                 onChange={(event) => handleChangeInput(parseInt(index), event)}
                             />
                         </Stack>
@@ -128,4 +136,4 @@ const ImportanceForm = ({type}) => {
     )
 }
 
-export default ImportanceForm
+export default EditImportanceForm

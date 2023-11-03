@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import axios from '../utils/axios'
 import { getCookie } from "../utils/axios";
 import getSAWID from "../utils/handler/saw/getSAWID";
+import getAHPID from "../utils/handler/ahp/getAHPID";
 
 const EditCriteriasForm = ({type}) => {
     const {id} = useParams()
@@ -27,8 +28,8 @@ const EditCriteriasForm = ({type}) => {
     function handleSubmit(e){
         e.preventDefault();
         console.log(inputFields);
+        const data = { name:[], atribute:[], crisp_type: [], weight: []}
         if(type==='saw'){
-            const data = { name:[], atribute:[], crisp_type: [], weight: []}
             for (let index = 0; index < inputFields.length; index++) {
                 data.name.push(inputFields[index].name)
                 data.atribute.push(inputFields[index].atribute)
@@ -52,10 +53,28 @@ const EditCriteriasForm = ({type}) => {
                 console.log(error.config)
             })
         }
-    }
-
-    function handleAddFields(){
-        setInputFields([...inputFields, criterias])
+        else if(type==='ahp'){
+            for (let index = 0; index < inputFields.length; index++) {
+                data.name.push(inputFields[index].name)
+                data.crisp_type.push(inputFields[index].crisps_type)
+            }
+            console.log(data)
+            axios.put('/api/ahp/'+id+'/criterias/update',data,{
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials:true
+            }).then(function(response){
+                console.log(response.data)
+                navigate('/ahp/'+id)
+            }).catch(function(error){
+                if(error.response){
+                   console.log(error.response)
+                }
+                console.log(error.config)
+            })
+        }
     }
 
     function handleRemoveFields(index){
@@ -80,11 +99,33 @@ const EditCriteriasForm = ({type}) => {
                     }
                     setInputFields(inputs)
                     console.log(inputFields)
+                }).catch(function([error]){
+                    console.log(error.config)
                 }).finally(function(){
                     setLoading(false)
                 })
         }
-    }, [loading])
+        else if(type==='ahp'){
+            Promise.all([getAHPID(id)])
+                .then(function([response]){
+                    console.log(response.data)
+                    const ahp_criteria = response.data.ahp_criteria
+                    console.log(ahp_criteria)
+                    const inputs = []
+                    for (let index = 0; index < ahp_criteria.length; index++) {
+                        const c = {name: ahp_criteria[index].name, 
+                            crisps_type: ahp_criteria[index].crisp_type}
+                        inputs.push(c)
+                    }
+                    setInputFields(inputs)
+                    console.log(inputFields)
+                }).catch(function([error]){
+                    console.log(error.config)
+                }).finally(function(){
+                    setLoading(false)
+                })
+        }
+    }, [])
     
     return(
         loading ? '' :

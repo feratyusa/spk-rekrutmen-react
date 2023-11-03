@@ -25,6 +25,11 @@ import EditData from './pages/data/form/edit';
 import EditSAW from './pages/aplikasi/saw/form/edit';
 import EditSAWCriterias from './pages/aplikasi/saw/form/criterias/edit';
 import EditSAWCrisps from './pages/aplikasi/saw/form/crisps/edit';
+import EditAHP from './pages/aplikasi/ahp/form/edit';
+import EditAHPCriterias from './pages/aplikasi/ahp/form/criterias/edit';
+import EditAHPCrisps from './pages/aplikasi/ahp/form/crisps/edit';
+import EditAHPCriteriasImportance from './pages/aplikasi/ahp/form/importance/criterias/edit';
+import EditAHPCrispsImportance from './pages/aplikasi/ahp/form/importance/crisps/edit';
 
 const App = () => {
   return (
@@ -52,10 +57,15 @@ const App = () => {
             <Route path='saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
             <Route path='saw/:id/criterias/:c_id/crisps/edit' element={ <EditSAWCrisps /> }/>
             <Route path='ahp/:id' element={ <AHPDetails /> }/>
+            <Route path='ahp/:id/edit' element={ <EditAHP /> }/>
             <Route path='ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
+            <Route path='ahp/:id/criterias/edit' element={ <EditAHPCriterias /> }/>
             <Route path='ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
+            <Route path='ahp/:id/criterias/:c_id/crisps/edit' element={ <EditAHPCrisps /> }/>
             <Route path='ahp/:id/criterias/importance/form' element={ <AHPCriteriasImportanceForm /> }/>
+            <Route path='ahp/:id/criterias/importance/edit' element={ <EditAHPCriteriasImportance /> }/>
             <Route path='ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
+            <Route path='ahp/:id/criterias/:c_id/crisps/importance/edit' element={ <EditAHPCrispsImportance /> }/>
           </Route>
         </Route>
       </Route>

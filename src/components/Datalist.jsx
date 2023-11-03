@@ -16,6 +16,7 @@ import getData from "../utils/handler/data/getData";
 import deleteData from "../utils/handler/data/deleteData";
 import deleteSAW from "../utils/handler/saw/deleteSAW";
 import DeleteDialogContent from "./DeleteDialogContent";
+import deleteAHP from "../utils/handler/ahp/deleteAHP";
 
 const TableHeader = () => {
     return (
@@ -50,7 +51,7 @@ const Datalist = ({data, type}) => {
           counter.current = data.data.length ? data.data.length : 0
           setLoading(false)
         })
-    }, [loading])
+    }, [])
     
     
     const handleCloseDialog = () => {
@@ -83,6 +84,18 @@ const Datalist = ({data, type}) => {
             window.location.reload()
           }).catch(function([error]){
             console.log(error.config)
+          })
+      }
+      else if(type==='ahp'){
+        Promise.all(deleteAHP(id))
+          .then(function(response){
+            console.log(response)
+          }).catch(function(error){
+            console.log(error.config)
+          }).finally(function(){
+            setOpenDialog(false)
+            setLoadingDelete(false)
+            window.location.reload()
           })
       }
     }

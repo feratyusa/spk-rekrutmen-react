@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import CriteriasForm from "../../../../components/CriteriasForm";
+import CriteriasForm from "../../../../../components/CriteriasForm";
 
 const AHPCriteriasForm = () => {
     return(

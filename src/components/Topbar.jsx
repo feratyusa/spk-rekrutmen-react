@@ -18,7 +18,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Outlet, redirect, useNavigate } from "react-router-dom";
 import Sidemenu from "./Sidemenu";
 import handleLogout from "../utils/handleLogout";
-import { useEffect } from "react";
 
 const drawerWidth = 240;
 
@@ -142,7 +141,7 @@ const TopbarComponents = () => {
 
 const Topbar = () => {
     const theme = useTheme();
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = useState(true);
 
     const handleDrawerOpen = () => {
         setOpen(true);
