@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { saveAs } from 'file-saver';
 import {Box, Button, Collapse, IconButton, Paper, Stack, 
     Table, TableBody, TableCell, TableContainer, TableRow, 
@@ -10,6 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Header from "./Header";
@@ -947,6 +948,115 @@ function AHPComponents({props, type}){
     );
 }
 
+const Results = ({results, type}) => {
+    const {id} = useParams()
+    const csvfile = useRef(null)
+
+    function downloadFile(result){
+        if (type==='saw') {
+            Promise.all([getSAWFile(id, result.id)])
+                .then(function([response]){
+                    csvfile.current = new File([response.data], result.file_name, {
+                        type:'text/csv'
+                    })
+                    console.log(response)
+                    saveAs(csvfile.current)
+                }).catch(function(error){
+                    console.log(error.response)
+                })
+        }
+        else if(type==='ahp'){
+            Promise.all([getAHPFile(id, result.id)])
+                .then(function([response]){
+                    csvfile.current = new File([response.data], result.file_name, {
+                        type:'text/csv'
+                    })
+                    console.log(response)
+                    saveAs(csvfile.current)
+                }).catch(function(error){
+                    console.log(error.response)
+                })
+        }
+        csvfile.current = null
+    }
+    return(
+        <Table size="medium" aria-label="criteria-list">
+            <TableHead>
+            <TableRow>
+                <TableCell>Nomor</TableCell>
+                <TableCell>Tanggal Dibuat</TableCell>
+                <TableCell></TableCell>
+            </TableRow>
+            </TableHead>
+            <TableBody>
+                {results.map((r, index) => (
+                    <TableRow key={r.id}>
+                        <TableCell>
+                            {index+1}
+                        </TableCell>
+                        <TableCell>
+                            {r.created_at}
+                        </TableCell>
+                        <TableCell>
+                        <Button 
+                            startIcon={<CloudDownloadIcon />} 
+                            color='info' 
+                            variant="contained"
+                            onClick={() => downloadFile(r)}
+                        >
+                            Download
+                        </Button> 
+                        </TableCell>
+                        
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    )
+}
+
+const ResultList = ({data, type}) => {
+    const [openResults, setOpenResult] = useState(false);
+
+    return(
+        <React.Fragment>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <Typography fontWeight={'bold'}>
+                        Result
+                    </Typography>
+                </TableCell>                
+                <TableCell>
+                    {
+                        data.result_file.length === 0 ?
+                        <Alert severity="warning">Metode belum dijalankan</Alert> :
+                        <Button 
+                            variant="contained"
+                            aria-label="expand row" 
+                            size="small" 
+                            onClick={() => setOpenResult(!openResults)}
+                            color="info"
+                            endIcon={openResults ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        >
+                            Tampil
+                        </Button>
+                    }
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <Collapse in={openResults} timeout="auto" unmountOnExit>
+                    <Box sx={{ margin: 1}}>
+                        <Results results={data.result_file} type={type} />
+                    </Box>
+                </Collapse>
+                </TableCell>
+            </TableRow>
+        </React.Fragment>
+    )
+
+}
+
 const TableDetails = ({data, type}) => {
     const title = (
         type === 'data' ? 'Data Details' 
@@ -956,6 +1066,7 @@ const TableDetails = ({data, type}) => {
     const csvfile = useRef(null)
     const [loadingRun, setLoadingRun] = useState(false)
     const [loadingDownload, setLoadingDownload] = useState(false)
+    const navigate = useNavigate()
 
     function check_data(){
         if(type==='data') return 1
@@ -1055,11 +1166,20 @@ const TableDetails = ({data, type}) => {
         }
     }
 
+    function navigateToDataList(){
+        navigate(type==='data' ? '/data' : type==='saw' ? '/saw' : '/ahp')
+    }
+
     return(
-        <Paper sx={{width:'100%', overflow:'hidden'}}>
+        <Box>
             <Grid container justifyContent={'space-between'}>
                 <Grid item>
-                    <Header title={title} />
+                    <Stack direction={'row'} spacing={2} sx={{mb:2}}>
+                        <IconButton aria-label="back" size="medium" onClick={navigateToDataList}>
+                            <ArrowBackIcon fontSize="inherit"/>
+                        </IconButton>
+                        <Header title={title}/>
+                    </Stack>
                 </Grid>
                 <Grid item>
                     {
@@ -1076,173 +1196,151 @@ const TableDetails = ({data, type}) => {
                     }
                 </Grid>
             </Grid>
-            <TableContainer>
-                <Table sx={{width:'100%', mb:3}}>
-                    <TableBody>
-                    <TableRow>
-                            <TableCell>
-                                <Typography fontWeight={'bold'}>
-                                    Nama
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                {data.name}
-                            </TableCell>
-                        </TableRow>
+            <Paper sx={{width:'100%', overflow:'hidden'}}>
+                <TableContainer>
+                    <Table sx={{width:'100%', mb:3}}>
+                        <TableBody>
                         <TableRow>
-                            <TableCell id="description">
-                                <Typography fontWeight={'bold'}>
-                                    Deskripsi
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                {data.description}
-                            </TableCell>
-                        </TableRow>
-                        {
-                            type==='data'?
-                            '' :
+                                <TableCell>
+                                    <Typography fontWeight={'bold'}>
+                                        Nama
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    {data.name}
+                                </TableCell>
+                            </TableRow>
                             <TableRow>
                                 <TableCell id="description">
                                     <Typography fontWeight={'bold'}>
-                                        Data
+                                        Deskripsi
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    {data.data.name}
+                                    {data.description}
                                 </TableCell>
                             </TableRow>
-                        }
-                        <TableRow>
-                            <TableCell id="created_at">
-                                <Typography fontWeight={'bold'}>
-                                    Tanggal Dibuat
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                {data.created_at}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <Typography fontWeight={'bold'}>
-                                    Tanggal Update
-                                </Typography>
-                            </TableCell>
-                            <TableCell id="updated_at">
-                                {data.updated_at}
-                            </TableCell>
-                        </TableRow>
-                        {
-                            type==='data'? '' :
-                            <TableRow>
-                                <TableCell>
-                                    <Typography fontWeight={'bold'}>
-                                        Result
-                                    </Typography>
-                                </TableCell>
-                                <TableCell id="result">
-                                        {
-                                            data.result_path === null ?
-                                            <Alert severity="warning">Metode belum dijalankan</Alert> :
-                                            <LoadingButton 
-                                                startIcon={<CloudDownloadIcon />} 
-                                                color='info' 
-                                                variant="contained"
-                                                loading={loadingDownload}
-                                                onClick={downloadFile}
-                                            >
-                                                Download
-                                            </LoadingButton> 
-                                        }
-                                </TableCell>
-                            </TableRow>
-                        }
-                        {
-                            type === 'data' ? '' 
-                            : type=== 'saw' ?
-                            <TableRow>
-                                <TableCell>
-                                    <Typography fontWeight={'bold'}>
-                                        Status
-                                    </Typography>
-                                </TableCell>
-                                <TableCell id="status">
-                                        {
-                                            check_data() === -2 ?
-                                            <Stack direction={'row'} spacing={2}>
-                                                <Alert severity="warning">Belum ada Kriteria</Alert>
-                                                <Alert severity="warning">Crisps Belum Lengkap</Alert>
-                                            </Stack>
-                                            : check_data() === -1 ?
-                                            <Alert severity="warning">Crisps Belum Lengkap</Alert>
-                                            : <Alert severity="success">Ready!</Alert>
-                                        }
-                                </TableCell>
-                            </TableRow> :
+                            {
+                                type==='data'?
+                                '' :
                                 <TableRow>
+                                    <TableCell id="description">
+                                        <Typography fontWeight={'bold'}>
+                                            Data
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        {data.data.name}
+                                    </TableCell>
+                                </TableRow>
+                            }
+                            <TableRow>
+                                <TableCell id="created_at">
+                                    <Typography fontWeight={'bold'}>
+                                        Tanggal Dibuat
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    {data.created_at}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
                                 <TableCell>
                                     <Typography fontWeight={'bold'}>
-                                        Status
+                                        Tanggal Update
                                     </Typography>
                                 </TableCell>
                                 <TableCell id="updated_at">
-                                        {
-                                            check_data() === -4 ?
-                                            <Stack direction={'row'} spacing={2}>
-                                                <Alert severity="warning">Belum ada Kriteria dan Crisps</Alert>
-                                                <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
-                                            </Stack>
-                                            : check_data() === -3 ?
-                                            <Stack direction={'row'} spacing={2}>
+                                    {data.updated_at}
+                                </TableCell>
+                            </TableRow>
+                            {
+                                type==='data'? '' :
+                                <ResultList data={data} type={type}/>
+                            }
+                            {
+                                type === 'data' ? '' 
+                                : type=== 'saw' ?
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography fontWeight={'bold'}>
+                                            Status
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell id="status">
+                                            {
+                                                check_data() === -2 ?
+                                                <Stack direction={'row'} spacing={2}>
+                                                    <Alert severity="warning">Belum ada Kriteria</Alert>
+                                                    <Alert severity="warning">Crisps Belum Lengkap</Alert>
+                                                </Stack>
+                                                : check_data() === -1 ?
                                                 <Alert severity="warning">Crisps Belum Lengkap</Alert>
+                                                : <Alert severity="success">Ready!</Alert>
+                                            }
+                                    </TableCell>
+                                </TableRow> :
+                                    <TableRow>
+                                    <TableCell>
+                                        <Typography fontWeight={'bold'}>
+                                            Status
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell id="updated_at">
+                                            {
+                                                check_data() === -4 ?
+                                                <Stack direction={'row'} spacing={2}>
+                                                    <Alert severity="warning">Belum ada Kriteria dan Crisps</Alert>
+                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
+                                                </Stack>
+                                                : check_data() === -3 ?
+                                                <Stack direction={'row'} spacing={2}>
+                                                    <Alert severity="warning">Crisps Belum Lengkap</Alert>
+                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
+                                                </Stack>
+                                                : check_data() === -2 ?
                                                 <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
-                                            </Stack>
-                                            : check_data() === -2 ?
-                                            <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
-                                            : check_data() === -1 ?
-                                            <Alert severity="warning">Skala Crisps Belum Lengkap</Alert>
-                                            : <Alert severity="success">Ready!</Alert>
-                                        }
-                                </TableCell>
-                            </TableRow>
-                        }
-                        {
-                            type === 'data' ? 
-                            <TableRow>
-                                <TableCell id="file">
-                                    <Typography fontWeight={'bold'}>
-                                        File
-                                    </Typography>
-                                </TableCell>
-                                <TableCell id="file">
-                                    <LoadingButton 
-                                        startIcon={<CloudDownloadIcon />} 
-                                        color='info'
-                                        variant="contained"
-                                        loading={loadingDownload}
-                                        onClick={downloadFile}
-                                    >
-                                        Download
-                                    </LoadingButton> 
-                                </TableCell>
-                            </TableRow>
-                            : type === 'saw' ?
-                                <SAWComponents props={data}/>
-                            :
-                            <React.Fragment>
-                                <AHPComponents props={data}/>
-                                <AHPImportance props={data.ahp_criteria} type={'criteria'}/>
-                                <AHPImportance props={data.ahp_criteria} type={'crisps'} />
-                            </React.Fragment>
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Button >
-
-            </Button>
-        </Paper>
+                                                : check_data() === -1 ?
+                                                <Alert severity="warning">Skala Crisps Belum Lengkap</Alert>
+                                                : <Alert severity="success">Ready!</Alert>
+                                            }
+                                    </TableCell>
+                                </TableRow>
+                            }
+                            {
+                                type === 'data' ? 
+                                <TableRow>
+                                    <TableCell id="file">
+                                        <Typography fontWeight={'bold'}>
+                                            File
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell id="file">
+                                        <LoadingButton 
+                                            startIcon={<CloudDownloadIcon />} 
+                                            color='info'
+                                            variant="contained"
+                                            loading={loadingDownload}
+                                            onClick={downloadFile}
+                                        >
+                                            Download
+                                        </LoadingButton> 
+                                    </TableCell>
+                                </TableRow>
+                                : type === 'saw' ?
+                                    <SAWComponents props={data}/>
+                                :
+                                <React.Fragment>
+                                    <AHPComponents props={data}/>
+                                    <AHPImportance props={data.ahp_criteria} type={'criteria'}/>
+                                    <AHPImportance props={data.ahp_criteria} type={'crisps'} />
+                                </React.Fragment>
+                            }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
+        </Box>
     );
 }
 

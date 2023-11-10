@@ -83,6 +83,9 @@ const TopbarComponents = () => {
         const { data } = await handleLogout()
         navigate('/login')
       }
+      else{
+        navigate('/user')
+      }
     }
 
     return(

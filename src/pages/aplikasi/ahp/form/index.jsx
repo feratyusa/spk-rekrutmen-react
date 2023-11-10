@@ -98,7 +98,22 @@ const AHPForm = () => {
                         onChange={(event, newValue) => handleChangeLabel(event, newValue)}
                     />
                     <Divider dark='true'/>
-                    <Button type="submit" variant="contained" color="success" sx={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>Submit</Button> 
+                    <Stack direction={"row"} spacing={2} justifyContent={'center'}>
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            color="success"
+                            x={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>
+                                Submit
+                        </Button> 
+                        <Button 
+                            variant="contained" 
+                            color="warning"
+                            href="/ahp"
+                            x={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>
+                                Cancel
+                        </Button> 
+                    </Stack>
                     </Stack>
                 </form>
             </Box>

@@ -1,14 +1,17 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom"
-import { Paper, Box, Stack, TextField, Button, Typography } from "@mui/material";
+import { Paper, Box, Stack, TextField, Button, Typography, Alert } from "@mui/material";
 import Header from "./Header";
 import getAHPID from "../utils/handler/ahp/getAHPID";
 import axios, {getCookie} from "../utils/axios";
+import { validImportance } from "../utils/regex";
 
 const ImportanceForm = ({type}) => {
     const {id, c_id} = useParams()
     const criterias = useRef(null)
     const criterias_name = useRef([])
+    const [impError, setImpError] = useState([false])
+    const [formError, setFormError] = useState(false)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -17,11 +20,26 @@ const ImportanceForm = ({type}) => {
     function handleChangeInput(index, event){
         const values = inputFields
         values[index] = event.target.value
+        const error = [...impError]
+        error[index] = !validImportance.test(values[index])
+        setFormError(false)
+        setImpError(error)
         setInputFields(values)
+    }
+
+    function check_valid(){
+        for (let index = 0; index < inputFields.length; index++) {
+            if(impError[index] || inputFields[index] === "") return false
+        }
+        return true
     }
 
     function handleSubmit(e){
         e.preventDefault();
+        if(!check_valid()){
+            setFormError(true)
+            return
+        }
         const outputs = []
         for (let index = 0; index < inputFields.length; index++) {
             outputs.push(inputFields[index])
@@ -56,17 +74,22 @@ const ImportanceForm = ({type}) => {
     useEffect(() => {
         Promise.all([getAHPID(id)])
             .then(function([response]){
+                criterias.current = []
+                criterias_name.current = []
                 const ahp = response.data
                 const c = (type==='crisps' ? ahp.ahp_criteria.find(c => c.id === parseInt(c_id)) : ahp.ahp_criteria)
                 criterias.current = (type==='crisps' ? c.ahp_crisp : c)
+                const imp = []
+                const error = []
                 for (let index = 0; index < criterias.current.length-1; index++) {
                     for (let j = 0; j < criterias.current.length-1-index; j++) {
                         criterias_name.current.push({ca: criterias.current[index].name, cb: criterias.current[index+j+1].name, importance: ""})
+                        imp.push("")
+                        error.push(false)
                     }
                 }
-                console.log(ahp)
-                console.log(criterias.current)
-                console.log(criterias_name.current)
+                setInputFields(imp)
+                setImpError(error)
                 setLoading(false)
             }).catch(function([error]){
                 console.log(error.config)
@@ -79,22 +102,36 @@ const ImportanceForm = ({type}) => {
         <Box>
             <Header title={type==='criteria' ? 'AHP Criterias Importance Form' : 'AHP Crisps Importance Form'}/>
             <Paper sx={{p:3}}>
+                {
+                    formError ? <Alert severity="error" sx={{mb:2}}>Harap isi semua bagian form dengan benar</Alert> : ""
+                }
                 <form onSubmit={handleSubmit}>
                     {criterias_name.current.map((criteria, index) => (
-                        <Stack direction={'row'} spacing={2} sx={{mb:2}} key={index}>
+                        <Stack 
+                            direction={'row'} 
+                            spacing={2} 
+                            sx={{mb:2}}
+                            key={index}
+                        >
+                            <TextField 
+                                name="no"
+                                label="No."
+                                variant="filled"
+                                value={index+1}
+                                sx={{
+                                    maxWidth:50
+                                }}
+                            />
                             <TextField
                                 name="id"
                                 label={ type === 'crisps' ? 'Crisp A' : "Kriteria A"}
                                 variant="filled"
-                                disabled
                                 value={criteria.ca}
                             />
-                            <Typography>X</Typography>
                             <TextField
                                 name="id"
                                 label={ type === 'crisps' ? 'Crisp B' : "Kriteria B"}
                                 variant="filled"
-                                disabled
                                 value={criteria.cb}
                             />
                             <TextField
@@ -102,6 +139,9 @@ const ImportanceForm = ({type}) => {
                                 label="Skala"
                                 variant="filled"
                                 onChange={(event) => handleChangeInput(parseInt(index), event)}
+                                error={impError[index]}
+                                helperText={impError[index] ? "Angka 1 - 9 atau inversenya (cth: 1/3, 1/5, dst.)" : ""}
+                                sx={{maxWidth:"200px"}}
                             />
                         </Stack>
                     ))}

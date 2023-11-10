@@ -116,12 +116,12 @@ const Datalist = ({data, type}) => {
           {
             type === 'data' ?
             <React.Fragment>
-              <Typography variant="h6">
+              <Typography variant="h6" color={'text.secondary'}>
                 Data Kosong
               </Typography>
             </React.Fragment> :
             <React.Fragment>
-              <Typography variant="h6">
+              <Typography variant="h6" color={'text.secondary'}>
                 {
                   type === 'saw' ? 'SAW Kosong' : 'AHP Kosong'
                 }
@@ -135,7 +135,6 @@ const Datalist = ({data, type}) => {
           }
         </Stack>
       </Paper>
-      
       :
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 440 }}>

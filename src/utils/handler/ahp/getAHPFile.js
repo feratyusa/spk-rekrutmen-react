@@ -1,8 +1,8 @@
 import axios from "../../axios"
 import { getCookie } from "../../axios"
 
-const getAHPFile = (id) => {
-    return axios.get('/api/ahp/'+id+'/file',{
+const getAHPFile = (id, result_id) => {
+    return axios.get('/api/ahp/'+id+'/file/'+result_id,{
         headers: {
             'Content-Type': 'text/csv',
             'Content-Disposition': 'attachment',

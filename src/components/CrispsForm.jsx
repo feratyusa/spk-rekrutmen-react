@@ -1,18 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Paper, Box, Stack, TextField, Select, MenuItem, Button, FormControl, InputLabel, IconButton, Typography } from "@mui/material";
+import { Paper, Box, Stack, TextField, Select, 
+    MenuItem, Button, FormControl, InputLabel, 
+    IconButton, Typography, Alert } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "./Header";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import AHPDataExample from "../global/AHPDataExample";
 import getSAWID from "../utils/handler/saw/getSAWID";
 import axios, { getCookie } from "../utils/axios";
+import { validName, integerOnly, validDetails } from "../utils/regex";
 import getAHPID from "../utils/handler/ahp/getAHPID";
 
 const CrispsForm = ({type}) => {
     const {id, c_id} = useParams()
     const criteria = useRef(null)
-    const data = useRef(null)
+    const [nameError, setNameError] = useState([false])
+    const [weightError, setWeightError] = useState([false])
+    const [num1Error, setNum1Error] = useState([false])
+    const [num2Error, setNum2Error] = useState([false])
+    const [compareError, setCompareError] = useState([false])    
+    const [detailsError, setDetailsError] = useState([false])
+    const [formError, setFormError] = useState(false)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -52,12 +60,111 @@ const CrispsForm = ({type}) => {
     function handleChangeInput(index, event) {
         const values = [...inputFields]
         values[index][event.target.name] = event.target.value
+        if(event.target.name === 'name'){
+            const error = [...nameError]
+            error[index] = !validName.test(values[index].name)
+            setNameError(error)
+        }
+        if(event.target.name === 'details'){
+            const error = [...detailsError]
+            error[index] = !validDetails.test(values[index].details)
+            setDetailsError(error)
+        }   
+        if(event.target.name === 'weight'){
+            const error = [...weightError]
+            error[index] = !integerOnly.test(values[index].weight)
+            setWeightError(error)
+        }
+        if(event.target.name === 'num1'){
+            const error = [...num1Error]
+            error[index] = !integerOnly.test(values[index].num1)
+            setNum1Error(error)
+        }
+        if(event.target.name === 'num2'){
+            const error = [...num2Error]
+            error[index] = !integerOnly.test(values[index].num2)
+            setNum2Error(error)
+        }
+        if(values[index].comparator === 5 ||  values[index].comparator === 6){
+            const cerror = [...compareError]
+            cerror[index] = !(compare_num1_num2(values[index].num1, values[index].num2))
+            setCompareError(cerror)
+        }
+        if(values[index].comparator < 5 && criteria.current.crisp_type === 0){
+            const cerror = [...compareError]
+            cerror[index] = false
+            setCompareError(cerror)
+        }
+        setFormError(false)
         setInputFields(values)
+    }
+
+    function handleAddFields(){
+        setInputFields([...inputFields, crisps])
+        setNameError([...nameError, false])
+        setWeightError([...weightError, false])
+        setNum1Error([...num1Error, false])
+        setNum2Error([...num2Error, false])
+        setCompareError([...compareError, false])
+        setDetailsError([...detailsError, false])        
+    }
+
+    function handleRemoveFields(index){
+        const values = [...inputFields];
+        values.splice(index, 1);
+        setInputFields(values)
+        const nerror = [...nameError]
+        nerror.splice(index, 1)
+        setNameError(nerror)
+        const werror = [...weightError]
+        werror.splice(index, 1)
+        setWeightError(werror)
+        const n1error = [...num1Error]
+        n1error.splice(index, 1)
+        setNum1Error(n1error)
+        const n2error = [...num2Error]
+        n2error.splice(index, 1)
+        setNum2Error(n2error)
+        const c1error = [...compareError]
+        c1error.splice(index, 1)
+        setCompareError(c1error)
+        const derror = [...detailsError]
+        derror.splice(index, 1)
+        setCompareError(derror)
+    }
+
+    function compare_num1_num2(num1, num2){
+        if(parseInt(num1) < parseInt(num2)) return true
+        return false
+    }
+
+    function check_valid(){
+        for (let index = 0; index < inputFields.length; index++) {
+            if(nameError[index] || inputFields[index].name === '') return false
+            if(criteria.current.crisp_type === 0){
+                if(num1Error[index] || inputFields[index].num1 === '') return false
+                if(compareError[index]) return false
+                if(inputFields[index].comparator === 5 || inputFields[index].comparator === 6){
+                    if(num2Error[index] || inputFields[index].num2 === '') return false
+                }
+            }
+            else{
+                if(detailsError[index] || inputFields[index].details === '') return false
+            }
+            if(type==='saw'){
+                if(weightError[index] || inputFields[index].weight === '') return false
+            }
+        }
+        return true
     }
 
     function handleSubmit(e){
         e.preventDefault();
-        let inputs = []        
+        let inputs = []
+        if(!check_valid()){
+            setFormError(true)
+            return
+        }        
         for (let index = 0; index < inputFields.length; index++) {
             if(criteria.current.crisp_type===0){
                 if(inputFields[index]['comparator'] === 5 || inputFields[index]['comparator'] === 6){
@@ -145,16 +252,6 @@ const CrispsForm = ({type}) => {
             })
         }
     }
-
-    function handleAddFields(){
-        setInputFields([...inputFields, crisps])
-    }
-
-    function handleRemoveFields(index){
-        const values = [...inputFields];
-        values.splice(index, 1);
-        setInputFields(values)
-    }
     
     return(
         loading ? '' :
@@ -168,22 +265,33 @@ const CrispsForm = ({type}) => {
                 </Box>
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} sx={{mb:2}}>
+                        {
+                            formError ? <Alert severity="error">Harap mengisi semua bagian dengan benar</Alert> : ""
+                        }
                     {inputFields.map((inputField, index) => (
-                        <Stack direction={'row'} spacing={2} sx={{mb:2}} key={index}>
-                            <TextField
-                                name="id"
-                                label="Urutan"
+                        <Stack 
+                            direction={'row'} 
+                            spacing={2} 
+                            sx={{mb:2}} 
+                            key={index}
+                        >
+                            <TextField 
+                                name="no"
+                                label="No."
                                 variant="filled"
-                                disabled
                                 value={index+1}
-                                sx={{maxWidth:80}}
+                                sx={{
+                                    maxWidth:"50px"
+                                }}
                             />
                             <TextField
+                                required
                                 name="name"
                                 label="Nama"
                                 variant="filled"
                                 value={inputField.name}
                                 onChange={(event) => handleChangeInput(index, event)}
+                                error={nameError[index]}
                             />
                             {
                                 criteria.current.crisp_type === 0 ?
@@ -208,38 +316,52 @@ const CrispsForm = ({type}) => {
                                     </FormControl>
                                     <TextField
                                         name="num1"
-                                        label="Angka 1"
+                                        label="Angka1"
                                         variant="filled"
+                                        type="number"
                                         value={inputField.num1}
                                         onChange={(event) => handleChangeInput(index, event)}
-                                        sx={{maxWidth:80}}
+                                        sx={{maxWidth:150}}
+                                        error={num1Error[index] || compareError[index]}
+                                        helperText={num1Error[index] ? "Bulat Positif" : compareError[index] ? "Angka1 < Angka2" : ""}
                                     />
                                     <TextField
                                         name="num2"
                                         label="Angka2"
                                         variant="filled"
+                                        type="number"
                                         value={inputField.num2}
                                         disabled={inputField.comparator === 5 || inputField.comparator === 6 ? false : true}
                                         onChange={(event) => handleChangeInput(index, event)}
-                                        sx={{maxWidth:80}}
+                                        sx={{maxWidth:150}}
+                                        error={num2Error[index] || compareError[index]}
+                                        helperText={num2Error[index] ? "Bulat Positif" : compareError[index] ? "Angka1 < Angka2" : ""}
                                     />
                                 </React.Fragment> :
                                 <TextField
+                                    required
                                     name="details"
-                                    label="Detail"
+                                    label="Details"
                                     variant="filled"
                                     value={inputField.details}
                                     onChange={(event) => handleChangeInput(index, event)}
+                                    error={detailsError[index]}
+                                    helperText={detailsError[index] ? "Panjang 3 - 24 karakter" : ""}
                                 />
                             }
                             {
                                 type === 'saw' ?
                                 <TextField
+                                    required
                                     name="weight"
                                     label="Bobot"
                                     variant="filled"
+                                    type="number"
                                     value={inputField.weight}
                                     onChange={(event) => handleChangeInput(index, event)}
+                                    sx={{maxWidth:"100px"}}
+                                    error={weightError[index]}
+                                    helperText={weightError[index] ? "Bulat Positif" : ""}
                                 />
                                 : ''
                             }

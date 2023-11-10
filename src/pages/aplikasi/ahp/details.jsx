@@ -24,9 +24,7 @@ const AHPDetails = () => {
 
     return(
         loading ? '' :
-        <Paper>
-            <TableDetails data={ahp.current} type={'ahp'} />
-        </Paper>
+        <TableDetails data={ahp.current} type={'ahp'} />
     );
 }
 

@@ -30,6 +30,7 @@ import EditAHPCriterias from './pages/aplikasi/ahp/form/criterias/edit';
 import EditAHPCrisps from './pages/aplikasi/ahp/form/crisps/edit';
 import EditAHPCriteriasImportance from './pages/aplikasi/ahp/form/importance/criterias/edit';
 import EditAHPCrispsImportance from './pages/aplikasi/ahp/form/importance/crisps/edit';
+import UserProfile from './pages/profile';
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
         <Route element={<RequireAuth />}>
           <Route element={<Topbar />}>
             <Route path="" element={ <Dashboard />} />
+            <Route path='user' element={<UserProfile />}/>
             <Route path="data" element={ <Data /> }/>
             <Route path="ahp" element={ <AHP /> }/>
             <Route path="saw" element={ <SAW /> }/>

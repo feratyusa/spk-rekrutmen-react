@@ -20,9 +20,7 @@ const SAWDetails = () => {
     
     return(
         loading ? '' :
-        <Paper>
-            <TableDetails data={data} type={'saw'}/>
-        </Paper>
+        <TableDetails data={data} type={'saw'}/>
     );
 }
 

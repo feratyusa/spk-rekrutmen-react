@@ -1,30 +1,51 @@
-import React from "react"
-import { useState } from "react"
-import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
-import Header from "./Header"
+import React, {useEffect, useRef, useState} from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { Alert, Box, Button, Paper, Stack, TextField, Typography, InputAdornment, IconButton } from "@mui/material"
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Header from "./Header"
 import axios, { getCookie } from "../utils/axios"
 import useAuth from "../utils/useAuth"
-import { useRef } from "react"
+import { validUsername, validPassword, validEmail } from "../utils/regex"
 
 const RegisterForm = () => {
-    const errRef = useRef(false)
+    const [nameError, setNameError] = useState(false)
+    const [userError, setUserError] = useState(false)
+    const [passError, setPassError] = useState(false)
+    const [emailError, setEmailError] = useState(false)
+    const [retypeError, setRetypeError] = useState(false)    
+    const [existError, setExistError] = useState(false)    
+    const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
     const [inputField, setInputField] = useState(
         {username: "", email: "", password: "", retype_password: ""}
     )
     
     function handleOnChangeInput(event){
+        if(event.target.name === 'username'){
+            setUserError(!validUsername.test(event.target.value))
+        }
+        if(event.target.name === 'password'){
+            setPassError(!validPassword.test(event.target.value))
+        }
+        if(event.target.name === 'email'){
+            setEmailError(!validEmail.test(event.target.value))
+        }
+        if(event.target.name === 'retype'){
+            const valid = event.target.value === inputField.password
+            setRetypeError(!valid)
+        }
         inputField[event.target.name] = event.target.value
         setInputField(inputField)
     }
 
+    function handleShowPassword(){
+        setShowPassword(!showPassword)
+    }
+
     function handleSubmit(e){
         e.preventDefault()
-        if(inputField.password !== inputField.retype_password){
-            console.log("Password doesn't match")
-        }
-        else{
+        if(!userError && !passError && !emailError && !retypeError){
             axios.post('/api/user/create',{
                 username: inputField.username,
                 password: inputField.password,
@@ -41,7 +62,9 @@ const RegisterForm = () => {
                 navigate('/login')
             }).catch(function(error){
                 if(error.response){
-                    console.log(error.response)
+                    if(error.response.status === 400){
+                        setExistError(true)
+                    }
                 }
                 else if(error.request){
                     console.log(error.request)
@@ -54,43 +77,74 @@ const RegisterForm = () => {
         }
     }
 
+    useEffect(() => {
+    }, [userError, passError, emailError, retypeError, showPassword, existError])
+    
+
     return(
         <React.Fragment>
             <Header title={'Register'} />
             <form onSubmit={handleSubmit}>
                 <Stack spacing={2}>
+                    {
+                        existError ? <Alert severity="error">Username sudah ada </Alert>
+                        : ''
+                    }
                     <TextField 
+                        required
                         name="username"
                         label="Username"
                         variant="outlined"
                         onChange={(event) => handleOnChangeInput(event)}
+                        error={userError}
+                        helperText="Panjang 4-12 karakter a-z, A-Z, atau _"
                     />
                     <TextField 
+                        required
                         name="email"
                         label="Email"
                         variant="outlined"
                         type="email"
                         onChange={(event) => handleOnChangeInput(event)}
+                        error={emailError}
                     />
                     <TextField 
+                        required
                         name="password"
                         label="Password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         variant="outlined"
-                        defaultValue={inputField.password}
                         onChange={(event) => handleOnChangeInput(event)}
+                        error={passError}
+                        helperText="Panjang 8 - 24 karakter"
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">
+                                <IconButton onClick={handleShowPassword}>
+                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                                </IconButton>
+                            </InputAdornment>,
+                        }}
                     />
-                    <TextField 
-                        name="retype_password"
+                    <TextField
+                        required 
+                        name="retype"
                         label="Retype Password"
                         variant="outlined"
-                        error={inputField.password === inputField.retype_password ? false : true}
+                        type={showPassword ? "text" : "password"}
                         onChange={(event) => handleOnChangeInput(event)}
+                        error={retypeError}
+                        helperText={retypeError ? "Harus sama dengan password" : ""}
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">
+                                <IconButton onClick={handleShowPassword}>
+                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                                </IconButton>
+                            </InputAdornment>,
+                        }}
                     />
                     <Button 
                         variant="contained"
                         type="submit"
-                        onClick={handleSubmit}
                     >
                         Submit
                     </Button>
@@ -104,6 +158,8 @@ const RegisterForm = () => {
 }
 
 const LoginForm = () => {
+    const [showPassword, setShowPassword] = useState(false)
+    const [loginError, setLoginError] = useState(false)
     const { setAuth } = useAuth()
     const navigate = useNavigate()
     const [inputField, setInputField] = useState(
@@ -113,6 +169,10 @@ const LoginForm = () => {
     function handleOnChangeInput(event){
         inputField[event.target.name] = event.target.value
         setInputField(inputField)
+    }
+
+    function handleShowPassword(){
+        setShowPassword(!showPassword)
     }
 
     function handleSubmit(e){
@@ -132,7 +192,10 @@ const LoginForm = () => {
             navigate('/')
         }).catch(function(error){
             if(error.response){
-                console.log(error.response)
+                if(error.response.status === 403){
+                    setLoginError(true)
+                }
+                console.log(error.response)                
             }
             else if(error.request){
                 console.log(error.request)
@@ -140,16 +203,22 @@ const LoginForm = () => {
             else{
                 console.log(error.message)
             }
-            console.log(error.config);
         })
     }
+
+    useEffect(() => {
+    }, [loginError, showPassword])
 
     return(
         <React.Fragment>
             <Header title={'Login'} />
             <form onSubmit={handleSubmit}>
                 <Stack spacing={2}>
-                    <TextField 
+                    {
+                        loginError ? <Alert severity="error">Username atau Password salah</Alert>
+                        : ''
+                    }
+                    <TextField
                         name="username"
                         label="Username"
                         variant="outlined"
@@ -158,14 +227,20 @@ const LoginForm = () => {
                     <TextField 
                         name="password"
                         label="Password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         variant="outlined"
                         onChange={(event) => handleOnChangeInput(event)}
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">
+                                <IconButton onClick={handleShowPassword}>
+                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                                </IconButton>
+                            </InputAdornment>,
+                        }}
                     />
                     <Button 
                         variant="contained"
-                        type="submit"
-                        onClick={handleSubmit}
+                        type="submit"                        
                     >
                         Submit
                     </Button>

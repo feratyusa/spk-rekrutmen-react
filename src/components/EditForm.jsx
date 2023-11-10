@@ -90,7 +90,8 @@ const EditForm = ({type}) => {
         e.preventDefault()
         if(type==='data'){
             const data = {
-                name: inputField.name,        
+                name: inputField.name,
+                description: inputField.description,        
                 file: file
             }
             axios.put('/api/data/'+id+'/update', data,{
@@ -157,6 +158,7 @@ const EditForm = ({type}) => {
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} alignContent={'center'}>
                     <TextField
+                        required
                         name="name"
                         label="Nama File"
                         variant="filled"
@@ -164,6 +166,7 @@ const EditForm = ({type}) => {
                         onChange={(event) => handleChangeInput(event)}
                     />
                     <TextField
+                        required
                         name="description"
                         label="Deskripsi File"
                         variant="filled"
@@ -194,7 +197,22 @@ const EditForm = ({type}) => {
                         }
                     </FormControl>
                     <Divider dark='true'/>
-                    <Button type="submit" variant="contained" color="success" sx={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>Submit</Button> 
+                    <Stack direction={"row"} spacing={2} justifyContent={'center'}>
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            color="success"
+                            x={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>
+                                Submit
+                        </Button> 
+                        <Button 
+                            variant="contained" 
+                            color="warning"
+                            href={type==='data' ? '/data/'+id : type==='saw' ? '/saw/'+id : '/ahp/'+id}
+                            x={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>
+                                Cancel
+                        </Button> 
+                    </Stack>
                     </Stack>
                 </form>
             </Box>

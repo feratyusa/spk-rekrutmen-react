@@ -1,5 +1,4 @@
 import TableDetails from "../../components/TableDetails";
-import { Paper } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -21,9 +20,7 @@ const DataDetails = () =>{
 
     return(
         loading ? '' :
-        <Paper elevation={1} square={false} >
-            <TableDetails data={data} type={'data'} />
-        </Paper>
+        <TableDetails data={data} type={'data'} />        
     );
 }
 
