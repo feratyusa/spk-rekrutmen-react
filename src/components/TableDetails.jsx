@@ -25,6 +25,8 @@ import deleteAHPCriteriaImportance from "../utils/handler/ahp/deleteAHPCriteriaI
 import deleteAHPCrispsImportance from "../utils/handler/ahp/deleteAHPCrispsImportance";
 import runAHPMethod from "../utils/handler/ahp/runAHPMethod";
 import getAHPFile from "../utils/handler/ahp/getAHPFile";
+import deleteFileSAW from "../utils/handler/saw/deleteFileSAW";
+import deleteFileAHP from "../utils/handler/ahp/deleteFileAHP";
 
 function SAWCrisp({criteria}) {
     const {id} = useParams()
@@ -241,7 +243,6 @@ function SAWComponents({props}){
                                 aria-label="expand row" 
                                 size="small" 
                                 onClick={() => setOpenCriteria(!openCriteria)}
-                                color="info"
                                 endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             >
                                 Tampil
@@ -396,7 +397,6 @@ function AHPCrispsImportance({criteria}){
                                 aria-label="expand row" 
                                 size="small" 
                                 onClick={() => setOpenCriteria(!openCriteria)}
-                                color="info"
                                 endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             >
                                 Tampil
@@ -561,7 +561,6 @@ function AHPImportance({props, type}){
                             aria-label="expand row" 
                             size="small" 
                             onClick={() => setOpenCriteria(!openCriteria)}
-                            color="info"
                             endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         >
                             Tampil
@@ -573,7 +572,6 @@ function AHPImportance({props, type}){
                                 aria-label="expand row" 
                                 size="small" 
                                 onClick={() => setOpenCriteria(!openCriteria)}
-                                color="info"
                                 endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             >
                                 Tampil
@@ -879,7 +877,6 @@ function AHPComponents({props, type}){
                                 aria-label="expand row" 
                                 size="small" 
                                 onClick={() => setOpenCriteria(!openCriteria)}
-                                color="info"
                                 endIcon={openCriteria ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             >
                                 Tampil
@@ -950,6 +947,7 @@ function AHPComponents({props, type}){
 
 const Results = ({results, type}) => {
     const {id} = useParams()
+    const [loadingDelete, setLoadingDelete] = useState(false)
     const csvfile = useRef(null)
 
     function downloadFile(result){
@@ -979,6 +977,30 @@ const Results = ({results, type}) => {
         }
         csvfile.current = null
     }
+
+    function deleteFile(file){
+        setLoadingDelete(true)
+        if(type==='saw'){
+            Promise.all([deleteFileSAW(id, file.id)])
+                .then(function([response]){
+                    console.log(response)
+                    setLoadingDelete(false)
+                }).catch(function([error]){
+                    console.log(error.config)
+                })
+        }
+        else{
+            Promise.all([deleteFileAHP(id, file.id)])
+                .then(function([response]){
+                    console.log(response)
+                    setLoadingDelete(false)
+                }).catch(function([error]){
+                    console.log(error.config)
+                })
+        }
+        window.location.reload()
+    }
+
     return(
         <Table size="medium" aria-label="criteria-list">
             <TableHead>
@@ -998,16 +1020,26 @@ const Results = ({results, type}) => {
                             {r.created_at}
                         </TableCell>
                         <TableCell>
-                        <Button 
-                            startIcon={<CloudDownloadIcon />} 
-                            color='info' 
-                            variant="contained"
-                            onClick={() => downloadFile(r)}
-                        >
-                            Download
-                        </Button> 
+                            <Stack direction={'row'} spacing={3}>
+                                <Button 
+                                    endIcon={<CloudDownloadIcon />} 
+                                    variant="contained"
+                                    color="info"
+                                    onClick={() => downloadFile(r)}
+                                >
+                                    Download
+                                </Button> 
+                                <LoadingButton 
+                                    endIcon={<DeleteIcon />} 
+                                    color='error' 
+                                    variant="contained"
+                                    loading={loadingDelete}
+                                    onClick={() => deleteFile(r)}
+                                >
+                                    Hapus
+                                </LoadingButton> 
+                            </Stack>
                         </TableCell>
-                        
                     </TableRow>
                 ))}
             </TableBody>
@@ -1035,7 +1067,6 @@ const ResultList = ({data, type}) => {
                             aria-label="expand row" 
                             size="small" 
                             onClick={() => setOpenResult(!openResults)}
-                            color="info"
                             endIcon={openResults ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         >
                             Tampil

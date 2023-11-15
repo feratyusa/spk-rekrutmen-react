@@ -59,7 +59,7 @@ const RegisterForm = () => {
                 withCredentials: true
             }).then(function(response){
                 console.log(response)
-                navigate('/login')
+                navigate('/dashboard')
             }).catch(function(error){
                 if(error.response){
                     if(error.response.status === 400){

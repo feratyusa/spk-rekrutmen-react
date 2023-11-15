@@ -127,7 +127,6 @@ const SAWForm = () => {
                         <Button 
                             type="submit" 
                             variant="contained" 
-                            color="success"
                             x={{minWidth:"200px", ml:'auto', mr:'auto', mt:2}}>
                                 Submit
                         </Button> 

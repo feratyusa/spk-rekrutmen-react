@@ -150,7 +150,7 @@ const TopbarComponents = () => {
 
 const Topbar = () => {
     const theme = useTheme();
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(window.innerWidth < 850 ? false : true);
 
     const handleDrawerOpen = () => {
         setOpen(true);

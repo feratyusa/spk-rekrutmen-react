@@ -19,7 +19,7 @@ const Sidemenu = () => {
       component="nav"
       aria-labelledby="nested-list-subheader"
     >
-      <ListItemButton href="/">
+      <ListItemButton href="/dashboard">
         <ListItemIcon>
           <HomeOutlinedIcon />
         </ListItemIcon>

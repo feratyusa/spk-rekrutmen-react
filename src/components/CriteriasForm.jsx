@@ -207,7 +207,7 @@ const CriteriasForm = ({type}) => {
                         <Button 
                             size="medium" 
                             variant="contained" 
-                            color="info" 
+                            color="secondary" 
                             onClick={handleAddFields}
                             sx={{maxWidth:300, textAlign:"center"}}
                             endIcon={<AddIcon />}
