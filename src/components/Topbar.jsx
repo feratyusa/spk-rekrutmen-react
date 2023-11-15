@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { styled, useTheme } from '@mui/material/styles';
-import { Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
@@ -15,9 +15,11 @@ import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Outlet, redirect, useNavigate } from "react-router-dom";
 import Sidemenu from "./Sidemenu";
 import handleLogout from "../utils/handleLogout";
+import useAuth from "../utils/useAuth";
 
 const drawerWidth = 240;
 
@@ -67,6 +69,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const TopbarComponents = () => {
+    const {auth} = useAuth()
     const settings = ['Profile', 'Logout']
     const navigate = useNavigate()
     const [anchorElUser, setAnchorElUser] = useState();
@@ -90,7 +93,7 @@ const TopbarComponents = () => {
 
     return(
         <Grid container spacing={2} alignItems={'center'}>
-            <Grid item xs={11}>
+            <Grid item xs={10}>
             <Typography
                 variant="h6"
                 noWrap
@@ -107,12 +110,15 @@ const TopbarComponents = () => {
                 SISTEM PENDUKUNG KEPUTUSAN
             </Typography>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={2}>
               <Box textAlign={'center'}>
                   <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu}>
-                      <Avatar />
-                  </IconButton>
+                    <Button onClick={handleOpenUserMenu} 
+                      endIcon={<KeyboardArrowDownIcon />} 
+                      color={'inherit'}
+                    >
+                        {auth.user}
+                    </Button>
                   </Tooltip>
                   <Menu
                     sx={{ mt: '45px' }}
