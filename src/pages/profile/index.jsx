@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import getUser from "../../utils/handler/getUser"
-import { Paper, Table, TableBody, TableContainer, TableRow, TableCell, Box, Typography, Stack, IconButton } from "@mui/material"
+import { Paper, Table, TableBody, TableContainer, TableRow, TableCell, Box, Typography, Stack, IconButton, Button } from "@mui/material"
 import Header from "../../components/Header"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from "react-router-dom";
@@ -41,6 +41,16 @@ const UserProfile = () => {
                             <TableRow>
                                 <TableCell>
                                     <Typography fontWeight={'bold'}>
+                                        Nama
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    {user.current?.name}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography fontWeight={'bold'}>
                                         Username
                                     </Typography>
                                 </TableCell>
@@ -56,6 +66,18 @@ const UserProfile = () => {
                                 </TableCell>
                                 <TableCell>
                                     {user.current.email}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography fontWeight={'bold'}>
+                                        Password
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant="contained" href="/user/change-password">
+                                        Ubah Password
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

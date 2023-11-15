@@ -34,6 +34,7 @@ import UserProfile from './pages/profile';
 import CaraPenggunaanPage from './pages/tutorial/cara-penggunaan';
 import HasilMetodePage from './pages/tutorial/hasil-metode';
 import PerkenalanPage from './pages/tutorial/perkenalan';
+import ChangePassword from './pages/profile/change-password';
 
 const App = () => {
   return (
@@ -45,7 +46,10 @@ const App = () => {
         <Route element={<RequireAuth />}>
           <Route element={<Topbar />}>
             <Route path="" element={ <Dashboard />} />
-            <Route path='user' element={<UserProfile />}/>
+            <Route path='user'>
+              <Route path='' element={<UserProfile />} />
+              <Route path='change-password' element={<ChangePassword />} />
+            </Route>
             <Route path="data" element={ <Data /> }/>
             <Route path="ahp" element={ <AHP /> }/>
             <Route path="saw" element={ <SAW /> }/>
