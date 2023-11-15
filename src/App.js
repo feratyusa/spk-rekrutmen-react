@@ -35,51 +35,81 @@ import CaraPenggunaanPage from './pages/tutorial/cara-penggunaan';
 import HasilMetodePage from './pages/tutorial/hasil-metode';
 import PerkenalanPage from './pages/tutorial/perkenalan';
 import ChangePassword from './pages/profile/change-password';
+import LandingPage from './pages/landing';
 
 const App = () => {
   return (
-    <Routes> 
-      <Route path="/">
-        <Route path='login' element={<Login />} />
-        <Route path='register' element={<Register />} />
+    <Routes>
+      <Route path='' element={<LandingPage />} />
+      <Route path='login' element={<Login />} />
+      <Route path='register' element={<Register />} />
 
-        <Route element={<RequireAuth />}>
-          <Route element={<Topbar />}>
-            <Route path="" element={ <Dashboard />} />
-            <Route path='user'>
-              <Route path='' element={<UserProfile />} />
-              <Route path='change-password' element={<ChangePassword />} />
-            </Route>
-            <Route path="data" element={ <Data /> }/>
-            <Route path="ahp" element={ <AHP /> }/>
-            <Route path="saw" element={ <SAW /> }/>
-            <Route path="data/form" element={ <DataForm /> }/>
-            <Route path="saw/form" element={ <SAWForm /> }/>
-            <Route path="ahp/form" element={ <AHPForm /> }/>
-            <Route path='data/:id' element={ <DataDetails /> }/>
-            <Route path='data/:id/edit' element={ <EditData /> }/>
-            <Route path='saw/:id' element={ <SAWDetails /> }/>
-            <Route path='saw/:id/edit' element={ <EditSAW /> }/>
-            <Route path='saw/:id/criterias/form' element={ <SAWCriteriasForm /> }/>
-            <Route path='saw/:id/criterias/edit' element={ <EditSAWCriterias /> }/>
-            <Route path='saw/:id/criterias/:c_id/crisps/form' element={ <SAWCrispsForm /> }/>
-            <Route path='saw/:id/criterias/:c_id/crisps/edit' element={ <EditSAWCrisps /> }/>
-            <Route path='ahp/:id' element={ <AHPDetails /> }/>
-            <Route path='ahp/:id/edit' element={ <EditAHP /> }/>
-            <Route path='ahp/:id/criterias/form' element={ <AHPCriteriasForm /> }/>
-            <Route path='ahp/:id/criterias/edit' element={ <EditAHPCriterias /> }/>
-            <Route path='ahp/:id/criterias/:c_id/crisps/form' element={ <AHPCrispsForm /> }/>
-            <Route path='ahp/:id/criterias/:c_id/crisps/edit' element={ <EditAHPCrisps /> }/>
-            <Route path='ahp/:id/criterias/importance/form' element={ <AHPCriteriasImportanceForm /> }/>
-            <Route path='ahp/:id/criterias/importance/edit' element={ <EditAHPCriteriasImportance /> }/>
-            <Route path='ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
-            <Route path='ahp/:id/criterias/:c_id/crisps/importance/edit' element={ <EditAHPCrispsImportance /> }/>
-            <Route path="tutorial" element={<Tutorial />}>
-              <Route path='' element={<PerkenalanPage />}/>
-              <Route path='cara-penggunaan' element={<CaraPenggunaanPage />} />
-              <Route path='hasil-metode' element={<HasilMetodePage />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<Topbar />}>
+
+          <Route path="dashboard" element={ <Dashboard />} />
+
+          <Route path='user'>
+            <Route path='' element={<UserProfile />} />
+            <Route path='change-password' element={<ChangePassword />} />
+          </Route>
+
+          <Route path="data">
+            <Route path='' element={ <Data /> } />
+            <Route path="form" element={ <DataForm /> }/>
+            <Route path=':id'>
+              <Route path='' element={ <DataDetails /> } />
+              <Route path='edit' element={ <EditData /> }/>
             </Route>
           </Route>
+
+          <Route path="saw">
+            <Route path='' element={ <SAW /> } />
+            <Route path="form" element={ <SAWForm /> }/>
+            <Route path=':id'>
+              <Route path='' element={ <SAWDetails /> } />
+              <Route path='edit' element={ <EditSAW /> }/>
+              <Route path='criterias'>
+                <Route path='form' element={ <SAWCriteriasForm /> }/>
+                <Route path='edit' element={ <EditSAWCriterias /> }/>
+                <Route path=':c_id/crisps'>
+                  <Route path='form' element={ <SAWCrispsForm /> }/>
+                  <Route path='edit' element={ <EditSAWCrisps /> }/>
+                </Route>
+              </Route>
+            </Route>
+          </Route>
+          
+          <Route path="ahp">
+            <Route path="" element={ <AHP /> }/>
+            <Route path=':id'>
+              <Route path='' element={ <AHPDetails /> }/>
+              <Route path='edit' element={ <EditAHP /> }/>
+              <Route path='criterias'>
+                <Route path='form' element={ <AHPCriteriasForm /> }/>
+                <Route path='edit' element={ <EditAHPCriterias /> }/>
+                <Route path='importance'>
+                  <Route path='form' element={ <AHPCriteriasImportanceForm /> }/>
+                  <Route path='edit' element={ <EditAHPCriteriasImportance /> }/>
+                </Route>
+                <Route path=':c_id/crisps'>
+                  <Route path='form' element={ <AHPCrispsForm /> }/>
+                  <Route path='edit' element={ <EditAHPCrisps /> }/>
+                  <Route path='importance'>
+                    <Route path='form' element={ <AHPCrispsImportanceForm /> }/>
+                    <Route path='edit' element={ <EditAHPCrispsImportance /> }/>
+                  </Route>
+                </Route>
+              </Route>
+            </Route>
+          </Route>
+
+          <Route path="tutorial" element={<Tutorial />}>
+            <Route path='' element={<PerkenalanPage />}/>
+            <Route path='cara-penggunaan' element={<CaraPenggunaanPage />} />
+            <Route path='hasil-metode' element={<HasilMetodePage />} />
+          </Route>
+
         </Route>
       </Route>
     </Routes>
