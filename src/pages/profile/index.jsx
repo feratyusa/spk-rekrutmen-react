@@ -22,7 +22,7 @@ const UserProfile = () => {
     }, [])
 
     function navigateBack(){
-        navigate('/')
+        navigate('/dashboard')
     }
     
     return(

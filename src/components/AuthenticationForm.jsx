@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Alert, Box, Button, Paper, Stack, TextField, Typography, InputAdornment, IconButton } from "@mui/material"
+import { Alert, Box, Button, Paper, Stack, TextField, Typography, InputAdornment, IconButton, Fade } from "@mui/material"
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "./Header"
@@ -189,7 +189,7 @@ const LoginForm = () => {
         }).then(function(response){
             setAuth({user:inputField.username})
             console.log(response)
-            navigate('/')
+            navigate('/dashboard')
         }).catch(function(error){
             if(error.response){
                 if(error.response.status === 403){
@@ -260,13 +260,17 @@ const AuthenticationForm = ({type}) => {
             display={'flex'}
             justifyContent={'center'}
             alignItems={'center'}
-            sx={{minHeight:'100vh'}}
+            sx={{minHeight:'100vh', backgroundColor: 'primary.main'}}
         >
+            <Fade in>
             <Paper
+                elevation={10}
                 sx={{
-                    p:10
+                    p:10,
+                    borderRadius:8
                 }}
             >
+
                 {
                     type === 'login' ?
                     <LoginForm />
@@ -274,6 +278,7 @@ const AuthenticationForm = ({type}) => {
                     <RegisterForm />
                 }
             </Paper>
+            </Fade>
         </Box>
     )
 }

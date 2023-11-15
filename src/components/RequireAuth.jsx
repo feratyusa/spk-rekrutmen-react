@@ -1,7 +1,7 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../utils/useAuth";
 import axios from "../utils/axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 
 const RequireAuth = () => {
     const { auth, setAuth } = useAuth();    
