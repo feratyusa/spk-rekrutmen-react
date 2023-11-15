@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, Icon } from '@mui/material';
+import { Box, Typography, Grid, Icon, Link } from '@mui/material';
 import Header from '../../components/Header'
 import ItemCard from '../../components/ItemCard';
 import useAuth from '../../utils/useAuth'
@@ -49,7 +49,10 @@ const Dashboard = () => {
                 </Grid>
                 <Grid item>
                     <Typography color='text.primary'>
-                        Untuk mengetahui cara penggunaan <em>Recruiter Assistant</em> dapat dibaca pada halaman <a href="/tutorial">Tutorial</a>
+                        <b><span style={{color:"#009688"}}>Recruiter Assistant</span></b> adalah aplikasi yang membantu rekrutmen calon karyawan 
+                        berdasarkan data dan kriteria yang diberikan. Aplikasi akan melakukan peranking berdasarkan 
+                        nilai bobot yang diberikan pada setiap kriteria calon karyawan. Jika pertama kali menggunakan aplikasi ini, 
+                        sangat disarankan untuk membaca <Link href='/tutorial'>Tutorial</Link> terlebih dahulu.
                     </Typography>
                 </Grid>
             </Grid>
