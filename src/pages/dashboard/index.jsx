@@ -1,4 +1,4 @@
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography, Grid, Icon } from '@mui/material';
 import Header from '../../components/Header'
 import ItemCard from '../../components/ItemCard';
 import useAuth from '../../utils/useAuth'
@@ -40,21 +40,24 @@ const Dashboard = () => {
         borderBottom:3,
         borderColor:'primary.main'
     }}>
-        <Grid container spacing={1}>
-            <Grid item container xs={8} direction={'column'} justifyContent={'center'}>
+        <Grid container spacing={1} alignItems={'center'}>
+            <Grid item container xs={8} direction={'column'}>
                 <Grid item>
                     <Typography variant='h5' fontWeight={'bold'} mb={1} color='text.primary'>
-                        Selamat datang, {auth.user}
+                        Selamat Datang, {auth.user}
                     </Typography>
                 </Grid>
                 <Grid item>
                     <Typography color='text.primary'>
-                        Untuk mengetahui cara penggunaan Auto Recruiter dapat dibaca pada halaman <a href="/tutorial">Tutorial</a>
+                        Untuk mengetahui cara penggunaan <em>Recruiter Assistant</em> dapat dibaca pada halaman <a href="/tutorial">Tutorial</a>
                     </Typography>
                 </Grid>
             </Grid>
             <Grid item xs={4}>
-                <img src="../../assets/logo/png/logo-no-background.png" alt="" width={'300px'}/>
+                <img src="../../assets/logo/png/logo-no-background.png" 
+                    alt="Recruiter Assistant"
+                    width={'100%'}
+                    />
             </Grid>
         </Grid>
     </Box>

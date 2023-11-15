@@ -144,7 +144,7 @@ const TopbarComponents = () => {
 
 const Topbar = () => {
     const theme = useTheme();
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -183,9 +183,11 @@ const Topbar = () => {
             anchor="left"
             open={open}
         >
-            <DrawerHeader>
-            <img 
-                src="/../../assets/logo/svg/logo-no-background.svg" alt="AutoRecruiter" width={'180px'}
+            <DrawerHeader sx={{marginLeft: 5}}>
+            <img
+                src="/../../assets/logo/png/logo-name-no-background.png" 
+                alt="Recruiter Assistant" 
+                width={'100%'}
             />
             <IconButton onClick={handleDrawerClose}>
                 {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -193,7 +195,7 @@ const Topbar = () => {
             </DrawerHeader>
             <Divider />
             <Sidemenu />
-        </Drawer>
+        </Drawer>        
         <Main open={open}>
             <DrawerHeader />
 

@@ -31,6 +31,9 @@ import EditAHPCrisps from './pages/aplikasi/ahp/form/crisps/edit';
 import EditAHPCriteriasImportance from './pages/aplikasi/ahp/form/importance/criterias/edit';
 import EditAHPCrispsImportance from './pages/aplikasi/ahp/form/importance/crisps/edit';
 import UserProfile from './pages/profile';
+import CaraPenggunaanPage from './pages/tutorial/cara-penggunaan';
+import HasilMetodePage from './pages/tutorial/hasil-metode';
+import PerkenalanPage from './pages/tutorial/perkenalan';
 
 const App = () => {
   return (
@@ -46,7 +49,6 @@ const App = () => {
             <Route path="data" element={ <Data /> }/>
             <Route path="ahp" element={ <AHP /> }/>
             <Route path="saw" element={ <SAW /> }/>
-            <Route path="tutorial" element={ <Tutorial /> }/>
             <Route path="data/form" element={ <DataForm /> }/>
             <Route path="saw/form" element={ <SAWForm /> }/>
             <Route path="ahp/form" element={ <AHPForm /> }/>
@@ -68,6 +70,11 @@ const App = () => {
             <Route path='ahp/:id/criterias/importance/edit' element={ <EditAHPCriteriasImportance /> }/>
             <Route path='ahp/:id/criterias/:c_id/crisps/importance/form' element={ <AHPCrispsImportanceForm /> }/>
             <Route path='ahp/:id/criterias/:c_id/crisps/importance/edit' element={ <EditAHPCrispsImportance /> }/>
+            <Route path="tutorial" element={<Tutorial />}>
+              <Route path='' element={<PerkenalanPage />}/>
+              <Route path='cara-penggunaan' element={<CaraPenggunaanPage />} />
+              <Route path='hasil-metode' element={<HasilMetodePage />} />
+            </Route>
           </Route>
         </Route>
       </Route>

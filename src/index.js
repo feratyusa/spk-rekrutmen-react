@@ -12,13 +12,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <StrictMode>
-    {/* <ThemeProvider theme={theme}> */}
+    <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
           <AuthProvider>
               <App /> 
           </AuthProvider>      
         </BrowserRouter>
-    {/* </ThemeProvider>s */}
+    </ThemeProvider>
   </StrictMode>
 );
