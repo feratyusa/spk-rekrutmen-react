@@ -20,6 +20,7 @@ const CrispsForm = ({type}) => {
     const [num2Error, setNum2Error] = useState([false])
     const [compareError, setCompareError] = useState([false])    
     const [detailsError, setDetailsError] = useState([false])
+    const [lengthError, setLengthError] = useState(false)
     const [formError, setFormError] = useState(false)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -106,7 +107,8 @@ const CrispsForm = ({type}) => {
         setNum1Error([...num1Error, false])
         setNum2Error([...num2Error, false])
         setCompareError([...compareError, false])
-        setDetailsError([...detailsError, false])        
+        setDetailsError([...detailsError, false])
+        setLengthError(false)        
     }
 
     function handleRemoveFields(index){
@@ -131,6 +133,7 @@ const CrispsForm = ({type}) => {
         const derror = [...detailsError]
         derror.splice(index, 1)
         setCompareError(derror)
+        setLengthError(false)
     }
 
     function compare_num1_num2(num1, num2){
@@ -161,6 +164,10 @@ const CrispsForm = ({type}) => {
     function handleSubmit(e){
         e.preventDefault();
         let inputs = []
+        if(inputFields.length < 2 || inputFields.length > 9){
+            setLengthError(true)
+            return
+        }
         if(!check_valid()){
             setFormError(true)
             return
@@ -256,7 +263,7 @@ const CrispsForm = ({type}) => {
     return(
         loading ? '' :
         <Box>
-            <Header title={'SAW Crisps Form'}/>
+            <Header title={type==='saw' ? 'Subkriteria SAW Form' : 'Subkriteria AHP Form'}/>
             <Paper sx={{p:3}}>
                 <Box sx={{mb:2}}>
                     <Typography variant="h6">

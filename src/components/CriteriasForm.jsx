@@ -13,6 +13,7 @@ const CriteriasForm = ({type}) => {
     const [nameError, setNameError] = useState([false])
     const [weightError, setWeightError] = useState([false])
     const [formError, setFormError] = useState(false)
+    const [lengthError, setLengthError] = useState(false)
     const navigate = useNavigate()
 
     const criterias = (type === 'saw' ? {name: "", atribute: "", crisps_type:"", weight: ""}
@@ -42,6 +43,7 @@ const CriteriasForm = ({type}) => {
         setInputFields([...inputFields, criterias])
         setNameError([...nameError, false])
         setWeightError([...weightError, false])
+        setLengthError(false)
     }
 
     function handleRemoveFields(index){
@@ -54,6 +56,7 @@ const CriteriasForm = ({type}) => {
         const werror = [...weightError]
         werror.splice(index, 1)
         setWeightError(werror)
+        setLengthError(false)
     }
 
     function check_valid(){
@@ -71,6 +74,10 @@ const CriteriasForm = ({type}) => {
     function handleSubmit(e){
         e.preventDefault();        
         const data = {name:[], atribute:[], crisp_type:[], weight:[]}
+        if(inputFields.length < 2 || inputFields.length > 9){
+            setLengthError(true)
+            return
+        }
         if(type==='saw'){
             for (let index = 0; index < inputFields.length; index++) {
                 data.name.push(inputFields[index].name)
@@ -118,6 +125,7 @@ const CriteriasForm = ({type}) => {
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} sx={{mb:2}}>
                         {
+                            lengthError ? <Alert severity="error">Jumlah kriteria 2 - 9</Alert> :
                             formError ? <Alert severity="error">Harap mengisi semua bagian form</Alert> : ""
                         }
                     {inputFields.map((inputField, index) => (
