@@ -11,7 +11,7 @@ const RequireAuth = () => {
         axios.get('/api/user/details', {
             withCredentials: true
         }).then(function(response){
-            setAuth({user:response.data.username, login:true})
+            setAuth({user:response.data.username, name:response.data.name, login:true})
         }).catch(function(error){
             console.log(error.config)
             setAuth({user:'', login:false})

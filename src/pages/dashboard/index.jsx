@@ -44,7 +44,7 @@ const Dashboard = () => {
             <Grid item container xs={8} direction={'column'}>
                 <Grid item>
                     <Typography variant='h5' fontWeight={'bold'} mb={1} color='text.primary'>
-                        Selamat Datang, {auth.user}
+                        Selamat Datang, {auth.name?.split(' ')[0]}
                     </Typography>
                 </Grid>
                 <Grid item>

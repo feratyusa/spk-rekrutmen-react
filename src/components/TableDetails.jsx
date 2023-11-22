@@ -338,6 +338,7 @@ function AHPCrispsImportance({criteria}){
             }).finally(function(){
                 setLoadingDelete(false)
                 setOpenDialog(false)
+                window.location.reload()
             })
     }
 

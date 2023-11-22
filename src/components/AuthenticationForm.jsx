@@ -6,7 +6,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "./Header"
 import axios, { getCookie } from "../utils/axios"
 import useAuth from "../utils/useAuth"
-import { validUsername, validPassword, validEmail } from "../utils/regex"
+import { validUsername, validPassword, validEmail, validName } from "../utils/regex"
 
 const RegisterForm = () => {
     const [nameError, setNameError] = useState(false)
@@ -18,10 +18,13 @@ const RegisterForm = () => {
     const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
     const [inputField, setInputField] = useState(
-        {username: "", email: "", password: "", retype_password: ""}
+        {username: "", name:"", email: "", password: "", retype_password: ""}
     )
     
     function handleOnChangeInput(event){
+        if(event.target.name === 'name'){
+            setNameError(!validName.test(event.target.value))
+        }
         if(event.target.name === 'username'){
             setUserError(!validUsername.test(event.target.value))
         }
@@ -45,9 +48,10 @@ const RegisterForm = () => {
 
     function handleSubmit(e){
         e.preventDefault()
-        if(!userError && !passError && !emailError && !retypeError){
+        if(!nameError && !userError && !passError && !emailError && !retypeError){
             axios.post('/api/user/create',{
                 username: inputField.username,
+                name: inputField.name,
                 password: inputField.password,
                 email: inputField.email
             },
@@ -78,7 +82,7 @@ const RegisterForm = () => {
     }
 
     useEffect(() => {
-    }, [userError, passError, emailError, retypeError, showPassword, existError])
+    }, [nameError, userError, passError, emailError, retypeError, showPassword, existError])
     
 
     return(
@@ -90,6 +94,15 @@ const RegisterForm = () => {
                         existError ? <Alert severity="error">Username sudah ada </Alert>
                         : ''
                     }
+                    <TextField 
+                        required
+                        name="name"
+                        label="Nama"
+                        variant="outlined"
+                        onChange={(event) => handleOnChangeInput(event)}
+                        error={nameError}
+                        helperText="Panjang 1 - 24 karakter"
+                    />
                     <TextField 
                         required
                         name="username"
@@ -266,7 +279,7 @@ const AuthenticationForm = ({type}) => {
             <Paper
                 elevation={10}
                 sx={{
-                    p:10,
+                    p:5,
                     borderRadius:8
                 }}
             >

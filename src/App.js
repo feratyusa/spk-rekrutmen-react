@@ -82,6 +82,7 @@ const App = () => {
           
           <Route path="ahp">
             <Route path="" element={ <AHP /> }/>
+            <Route path="form" element={ <AHPForm /> }/>
             <Route path=':id'>
               <Route path='' element={ <AHPDetails /> }/>
               <Route path='edit' element={ <EditAHP /> }/>
