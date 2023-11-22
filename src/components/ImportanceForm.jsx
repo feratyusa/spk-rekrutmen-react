@@ -10,8 +10,10 @@ const ImportanceForm = ({type}) => {
     const {id, c_id} = useParams()
     const criterias = useRef(null)
     const criterias_name = useRef([])
+    const [cr, setCR] = useState(0)
     const [impError, setImpError] = useState([false])
     const [formError, setFormError] = useState(false)
+    const [consistencyError, setConsistencyError] = useState(false)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
@@ -36,6 +38,7 @@ const ImportanceForm = ({type}) => {
 
     function handleSubmit(e){
         e.preventDefault();
+        setConsistencyError(false)
         if(!check_valid()){
             setFormError(true)
             return
@@ -45,7 +48,7 @@ const ImportanceForm = ({type}) => {
             outputs.push(inputFields[index])
         }
         console.log(outputs);
-        if(type!=='crisps'){
+        if(type !=='crisps'){
             axios.post('/api/ahp/'+id+'/criterias/importance/create',outputs,{
                 headers:{
                     'Content-Type': 'application/json',
@@ -54,7 +57,17 @@ const ImportanceForm = ({type}) => {
                 withCredentials: true
             }).then(function(response){
                 console.log(response.data)
+                
                 navigate('/ahp/'+id)
+            }).catch(function(error){
+                if(error.response){
+                    if(error.response.status === 412){
+                        setCR(error.response.data.CR)
+                        setConsistencyError(true)
+                    }
+                    console.log(error.response)
+                }
+                console.log(error.config)
             })
         }
         else if(type==='crisps'){
@@ -67,6 +80,15 @@ const ImportanceForm = ({type}) => {
             }).then(function(response){
                 console.log(response.data)
                 navigate('/ahp/'+id)
+            }).catch(function(error){
+                if(error.response){
+                    if(error.response.status === 412){
+                        setCR(error.response.data.message)
+                        setConsistencyError(true)
+                    }
+                    console.log(error.response)
+                }
+                console.log(error.config)
             })
         }
     }
@@ -103,6 +125,7 @@ const ImportanceForm = ({type}) => {
             <Header title={type==='criteria' ? 'AHP Criterias Importance Form' : 'AHP Crisps Importance Form'}/>
             <Paper sx={{p:3}}>
                 {
+                    consistencyError ? <Alert severity="error" sx={{mb:2}}>Consistency Ratio Error (CR = {cr})</Alert> :
                     formError ? <Alert severity="error" sx={{mb:2}}>Harap isi semua bagian form dengan benar</Alert> : ""
                 }
                 <form onSubmit={handleSubmit}>

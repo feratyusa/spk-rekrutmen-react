@@ -10,7 +10,9 @@ const EditImportanceForm = ({type}) => {
     const {id, c_id} = useParams()
     const criterias = useRef(null)
     const criterias_name = useRef([])
+    const [cr, setCR] = useState(0)
     const [impError, setImpError] = useState([false])
+    const [consistencyError, setConsistencyError] = useState(false)
     const [formError, setFormError] = useState(false)
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -36,6 +38,7 @@ const EditImportanceForm = ({type}) => {
 
     function handleSubmit(e){
         e.preventDefault();
+        setConsistencyError(false)
         if(!check_valid()){
             setFormError(true)
             return
@@ -55,6 +58,13 @@ const EditImportanceForm = ({type}) => {
             }).then(function(response){
                 console.log(response.data)
                 navigate('/ahp/'+id)
+            }).catch(function(error){
+                if(error.response){
+                    if(error.response.status === 412){
+                        setCR(error.response.data.CR)
+                        setConsistencyError(true)
+                    }
+                }
             })
         }
         else if(type==='crisps'){
@@ -68,6 +78,13 @@ const EditImportanceForm = ({type}) => {
             }).then(function(response){
                 console.log(response.data)
                 navigate('/ahp/'+id)
+            }).catch(function(error){
+                if(error.response){
+                    if(error.response.status === 412){
+                        setCR(error.response.data.CR)
+                        setConsistencyError(true)
+                    }
+                }
             })
         }
     }
@@ -109,6 +126,7 @@ const EditImportanceForm = ({type}) => {
             <Header title={type==='crisps' ? 'AHP Crisps Importance Edit' : 'AHP Criterias Importance Edit'}/>
             <Paper sx={{p:3}}>
                 {
+                    consistencyError ? <Alert severity="error" sx={{mb:2}}>Consistency Ratio Error (CR = {cr})</Alert> :
                     formError ? <Alert severity="error" sx={{mb:2}}>Harap isi semua bagian form</Alert> : ""
                 }
                 <form onSubmit={handleSubmit}>
