@@ -158,7 +158,7 @@ const EditCriteriasForm = ({type}) => {
     return(
         loading ? '' :
         <Box>
-            <Header title={type==='saw' ? 'SAW Criterias Form' : 'AHP Criterias Form'}/>
+            <Header title={type==='saw' ? 'Kriteria SAW Form' : 'Kriteria AHP Form'}/>
             <Paper sx={{p:3}}>
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} sx={{mb:2}}>

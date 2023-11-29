@@ -98,7 +98,7 @@ function SAWCrisp({criteria}) {
                             endIcon={<AddIcon />}
                             href={'/saw/'+ id + '/criterias/'+ criteria.id +'/crisps/form'}
                         >
-                            Buat Crisps
+                            Buat Subkriteria
                         </Button> :
                         <Stack direction={'row'} spacing={2}>
                             <Button 
@@ -181,11 +181,11 @@ function SAWCriteria({props}) {
         <Table size="medium" aria-label="criteria-list">
             <TableHead>
             <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Weight</TableCell>
-                <TableCell>Atribute</TableCell>
-                <TableCell>Criteria Type</TableCell>
-                <TableCell>Crisps</TableCell>
+                <TableCell>Nama</TableCell>
+                <TableCell>Bobot</TableCell>
+                <TableCell>Atribut</TableCell>
+                <TableCell>Tipe Kriteria</TableCell>
+                <TableCell>Subkriteria</TableCell>
                 <TableCell></TableCell>
             </TableRow>
             </TableHead>
@@ -231,7 +231,7 @@ function SAWComponents({props}){
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <Typography fontWeight={'bold'}>
-                        Criterias
+                        Kriteria
                     </Typography>
                 </TableCell>                
                 <TableCell>
@@ -404,7 +404,7 @@ function AHPCrispsImportance({criteria}){
                             </Button>
                             <Button 
                                 variant="contained"
-                                aria-label="edit crisps importance" 
+                                aria-label="edit subkriteria importance" 
                                 size="small" 
                                 color="warning"
                                 endIcon={<EditIcon />}
@@ -427,9 +427,9 @@ function AHPCrispsImportance({criteria}){
                                 onClose={handleCloseDialog}
                             >
                                 <DeleteDialogContent
-                                    content={'Skala Crisps'} 
+                                    content={'Skala Subkriteria'} 
                                     description={
-                                        'Semua skala crisps pada kriteria akan dihapus'
+                                        'Semua skala subkriteria pada kriteria akan dihapus'
                                     }
                                 />
                                 <DialogActions>
@@ -449,7 +449,7 @@ function AHPCrispsImportance({criteria}){
                             href={'/ahp/'+ id + '/criterias/'+criteria.id+'/crisps/importance/form'}
                             disabled={criteria.ahp_crisp.length === 0 ? true : false}
                         >
-                            Buat Skala Crisps
+                            Buat Skala Subkriteria
                         </Button>
                     }
                 </TableCell>
@@ -461,8 +461,8 @@ function AHPCrispsImportance({criteria}){
                         <Table size="medium" aria-label="criteria-list">
                             <TableHead>
                             <TableRow>
-                                <TableCell>Crisp A</TableCell>
-                                <TableCell>Crisp B</TableCell>
+                                <TableCell>Subkriteria A</TableCell>
+                                <TableCell>Subkriteria B</TableCell>
                                 <TableCell>Skala</TableCell>
                             </TableRow>
                             </TableHead>
@@ -550,7 +550,7 @@ function AHPImportance({props, type}){
                             type === 'criteria' ?
                             'Skala Kriteria'
                             :
-                            'Skala Crisps'
+                            'Skala Subkriteria'
                         }
                     </Typography>
                 </TableCell>                
@@ -725,7 +725,7 @@ function AHPCrisp({criteria}){
                             endIcon={<AddIcon />}
                             href={'/ahp/'+ id + '/criterias/'+ criteria.id +'/crisps/form'}
                         >
-                            Buat Crisps
+                            Buat Subkriteria
                         </Button> :
                         <Stack direction={'row'} spacing={2}>
                             <Button 
@@ -753,9 +753,9 @@ function AHPCrisp({criteria}){
                                 onClose={handleCloseDialog}
                             >
                                 <DeleteDialogContent
-                                    content={"AHP Crisps"}
+                                    content={"AHP Subkriteria"}
                                     description={
-                                        "Semua crisps pada kriteria akan dihapus"
+                                        "Semua subkriteria pada kriteria akan dihapus"
                                     }
                                 />
                                 <DialogActions>
@@ -776,7 +776,7 @@ function AHPCrisp({criteria}){
                             <Table size="small" aria-label="criteria-list">
                                 <TableHead>
                                 <TableRow>
-                                    <TableCell>Name</TableCell>
+                                    <TableCell>Nama</TableCell>
                                     <TableCell>Details</TableCell>
                                 </TableRow>
                                 </TableHead>
@@ -808,9 +808,9 @@ function AHPCriteria({props, type}) {
                 <TableCell>Tipe Kriteria</TableCell>
                 {
                     type === 'crisps_importance' ?
-                    <TableCell>Crisps Importance</TableCell> 
+                    <TableCell>Skala Subkriteria</TableCell> 
                     :
-                    <TableCell>Crisps</TableCell>                       
+                    <TableCell>Subkriteria</TableCell>                       
                 }
                 <TableCell></TableCell>
             </TableRow>
@@ -1304,10 +1304,10 @@ const TableDetails = ({data, type}) => {
                                                 check_data() === -2 ?
                                                 <Stack direction={'row'} spacing={2}>
                                                     <Alert severity="warning">Belum ada Kriteria</Alert>
-                                                    <Alert severity="warning">Crisps Belum Lengkap</Alert>
+                                                    <Alert severity="warning">Subkriteria Belum Lengkap</Alert>
                                                 </Stack>
                                                 : check_data() === -1 ?
-                                                <Alert severity="warning">Crisps Belum Lengkap</Alert>
+                                                <Alert severity="warning">Subkriteria Belum Lengkap</Alert>
                                                 : <Alert severity="success">Ready!</Alert>
                                             }
                                     </TableCell>
@@ -1322,18 +1322,18 @@ const TableDetails = ({data, type}) => {
                                             {
                                                 check_data() === -4 ?
                                                 <Stack direction={'row'} spacing={2}>
-                                                    <Alert severity="warning">Belum ada Kriteria dan Crisps</Alert>
-                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
+                                                    <Alert severity="warning">Belum ada Kriteria dan Subkriteria</Alert>
+                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Subkriteria</Alert>
                                                 </Stack>
                                                 : check_data() === -3 ?
                                                 <Stack direction={'row'} spacing={2}>
-                                                    <Alert severity="warning">Crisps Belum Lengkap</Alert>
-                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
+                                                    <Alert severity="warning">Subkriteria Belum Lengkap</Alert>
+                                                    <Alert severity="warning">Belum ada Skala Kriteria dan Subkriteria</Alert>
                                                 </Stack>
                                                 : check_data() === -2 ?
-                                                <Alert severity="warning">Belum ada Skala Kriteria dan Crisps</Alert>
+                                                <Alert severity="warning">Belum ada Skala Kriteria dan Subkriteria</Alert>
                                                 : check_data() === -1 ?
-                                                <Alert severity="warning">Skala Crisps Belum Lengkap</Alert>
+                                                <Alert severity="warning">Skala Subkriteria Belum Lengkap</Alert>
                                                 : <Alert severity="success">Ready!</Alert>
                                             }
                                     </TableCell>

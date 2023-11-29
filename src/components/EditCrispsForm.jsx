@@ -256,7 +256,7 @@ const EditCrispsForm = ({type}) => {
     return(
         loading ? '' :
         <Box>
-            <Header title={'SAW Crisps Edit'}/>
+            <Header title={type === 'saw' ? 'Subkriteria SAW Edit' : 'Subkriteria AHP Edit'}/>
             <Paper sx={{p:3}}>
                 <Box sx={{mb:2}}>
                     <Typography variant="h6">

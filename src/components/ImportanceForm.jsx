@@ -122,7 +122,7 @@ const ImportanceForm = ({type}) => {
     return(
         loading ? '' :
         <Box>
-            <Header title={type==='criteria' ? 'AHP Criterias Importance Form' : 'AHP Crisps Importance Form'}/>
+            <Header title={type==='criteria' ? 'Skala Kriteria AHP Form' : 'Skala Subkriteria AHP Form'}/>
             <Paper sx={{p:3}}>
                 {
                     consistencyError ? <Alert severity="error" sx={{mb:2}}>Consistency Ratio Error (CR = {cr})</Alert> :
@@ -147,13 +147,13 @@ const ImportanceForm = ({type}) => {
                             />
                             <TextField
                                 name="id"
-                                label={ type === 'crisps' ? 'Crisp A' : "Kriteria A"}
+                                label={ type === 'crisps' ? 'Subkriteria A' : "Kriteria A"}
                                 variant="filled"
                                 value={criteria.ca}
                             />
                             <TextField
                                 name="id"
-                                label={ type === 'crisps' ? 'Crisp B' : "Kriteria B"}
+                                label={ type === 'crisps' ? 'Subkriteria B' : "Kriteria B"}
                                 variant="filled"
                                 value={criteria.cb}
                             />

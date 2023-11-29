@@ -123,7 +123,7 @@ const EditImportanceForm = ({type}) => {
     return(
         loading ? '' :
         <Box>
-            <Header title={type==='crisps' ? 'AHP Crisps Importance Edit' : 'AHP Criterias Importance Edit'}/>
+            <Header title={type==='crisps' ? 'Skala Subkriteria AHP Edit' : 'Skala Kriteria AHP Edit'}/>
             <Paper sx={{p:3}}>
                 {
                     consistencyError ? <Alert severity="error" sx={{mb:2}}>Consistency Ratio Error (CR = {cr})</Alert> :

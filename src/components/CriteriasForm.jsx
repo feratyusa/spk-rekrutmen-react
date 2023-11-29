@@ -120,7 +120,7 @@ const CriteriasForm = ({type}) => {
     
     return(
         <Box>
-            <Header title={type==='saw' ? 'SAW Criterias Form' : 'AHP Criterias Form'}/>
+            <Header title={type==='saw' ? 'Kriteria SAW Form' : 'AHP Kriteria Form'}/>
             <Paper sx={{p:3}}>
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} sx={{mb:2}}>
