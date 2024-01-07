@@ -7,5 +7,5 @@ export const getCookie = (name) =>{
 }
 
 export default axios.create({
-    baseURL: "http://localhost:5000"
+    baseURL: "https://spk.prabupamungkas.site"
 });
