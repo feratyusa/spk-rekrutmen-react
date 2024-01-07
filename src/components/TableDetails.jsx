@@ -13,6 +13,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PreviewIcon from '@mui/icons-material/Preview';
 import Header from "./Header";
 import runSAWMethod from "../utils/handler/saw/runSAWMethod";
 import getDataFile from "../utils/handler/data/getDataFile";
@@ -385,7 +386,7 @@ function AHPCrispsImportance({criteria}){
                 </TableCell>     
                 <TableCell>
                     {
-                        criteria.crisps_type === 0 ? 'Number'
+                        criteria.crisp_type === 0 ? 'Number'
                         : 'String'
                     }
                 </TableCell>           
@@ -1023,6 +1024,13 @@ const Results = ({results, type}) => {
                         <TableCell>
                             <Stack direction={'row'} spacing={3}>
                                 <Button 
+                                    endIcon={<PreviewIcon />} 
+                                    variant="contained"
+                                    href={type==='saw' ? '/saw/'+id+'/file/'+r.id+'/view' : '/ahp/'+id+'/file/'+r.id+'/view'}
+                                >
+                                    Tampil
+                                </Button> 
+                                <Button 
                                     endIcon={<CloudDownloadIcon />} 
                                     variant="contained"
                                     color="info"
@@ -1056,7 +1064,7 @@ const ResultList = ({data, type}) => {
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <Typography fontWeight={'bold'}>
-                        Result
+                        Hasil Rekomendasi
                     </Typography>
                 </TableCell>                
                 <TableCell>

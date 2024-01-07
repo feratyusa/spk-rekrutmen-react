@@ -36,6 +36,8 @@ import HasilMetodePage from './pages/tutorial/hasil-metode';
 import PerkenalanPage from './pages/tutorial/perkenalan';
 import ChangePassword from './pages/profile/change-password';
 import LandingPage from './pages/landing';
+import ViewDataTableSAW from './pages/aplikasi/saw/view';
+import ViewDataTableAHP from './pages/aplikasi/ahp/view';
 
 const App = () => {
   return (
@@ -77,7 +79,9 @@ const App = () => {
                   <Route path='edit' element={ <EditSAWCrisps /> }/>
                 </Route>
               </Route>
+              <Route path='file/:file_id/view' element={ <ViewDataTableSAW />}/>
             </Route>
+            
           </Route>
           
           <Route path="ahp">
@@ -102,6 +106,7 @@ const App = () => {
                   </Route>
                 </Route>
               </Route>
+              <Route path='file/:file_id/view' element={ <ViewDataTableAHP />}/>
             </Route>
           </Route>
 

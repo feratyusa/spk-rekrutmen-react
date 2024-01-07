@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Stack, Divider, Autocomplete, TextField} from '@mui/material';
+import { Box, Stack, Divider, Autocomplete, TextField, Alert} from '@mui/material';
 import Button from '@mui/material/Button';
 import Header from '../../../../components/Header'
 import axios, { getCookie } from "../../../../utils/axios";
 import getData from "../../../../utils/handler/data/getData";
+import { validName, validDescription } from "../../../../utils/regex";
 
 const AHPForm = () => {
     const [data, setData] = useState()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [nameError, setNameError] = useState(false)
+    const [deskripsiError, setDeskripsiError] = useState(false)
+    const [dataError, setDataError] = useState(false)
+
     const [inputField, setInputField] = useState(
         {name:"", description:"", data_id: ""}
     )
@@ -21,9 +26,15 @@ const AHPForm = () => {
             setData(data.data)
             setLoading(false)
         })
-    }, [])
+    }, [nameError, deskripsiError, dataError])
     
     function handleChangeInput(event) {
+        if(event.target.name === 'name'){
+            setNameError(!validName.test(event.target.value))
+        }
+        if(event.target.name === 'description'){
+            setDeskripsiError(!validDescription.test(event.target.value))
+        }
         const values = inputField
         values[event.target.name] = event.target.value
         setInputField(values)
@@ -37,29 +48,37 @@ const AHPForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const ahp = {
-            name: inputField.name,        
-            description: inputField.description,
-            data_id: inputField.data_id
+        console.log(inputField)
+        if(inputField.data_id === ""){
+            setDataError(true)
+            console.log("Error data id null")
+            return
         }
-        axios.post('/api/ahp/create', ahp,{
-            headers:{
-                'Content-Type': 'multipart/form-data',
-                'X-CSRF-TOKEN': getCookie('csrf_access_token')
-            },
-            withCredentials:true
-        }).then(function(response){
-            console.log(response.data)
-            navigate('/ahp/'+response.data.id)
-        }).catch(function(error){
-            if(error.response){
-                console.log(error.response)
+        if(!nameError && !deskripsiError && !dataError){
+            const ahp = {
+                name: inputField.name,        
+                description: inputField.description,
+                data_id: inputField.data_id
             }
-            else if(error.request){
-                console.log(error.request)
-            }
-            console.log(error.config)
-        })
+            axios.post('/api/ahp/create', ahp,{
+                headers:{
+                    'Content-Type': 'multipart/form-data',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token')
+                },
+                withCredentials:true
+            }).then(function(response){
+                console.log(response.data)
+                navigate('/ahp/'+response.data.id)
+            }).catch(function(error){
+                if(error.response){
+                    console.log(error.response)
+                }
+                else if(error.request){
+                    console.log(error.request)
+                }
+                console.log(error.config)
+            })
+        }        
     }
 
     return(
@@ -76,12 +95,17 @@ const AHPForm = () => {
             >
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={2} alignContent={'center'}>
+                    {
+                        dataError ? <Alert severity="error">Harap isi bagian data</Alert> : ""
+                    }
                     <TextField
                         name="name"
                         label="Nama AHP"
                         variant="filled"
                         defaultValue={inputField.name}
                         onChange={(event) => handleChangeInput(event)}
+                        error={nameError}
+                        helperText="Maksimal 24 karakter"
                     />
                     <TextField
                         name="description"
@@ -89,6 +113,8 @@ const AHPForm = () => {
                         variant="filled"
                         defaultValue={inputField.description}
                         onChange={(event) => handleChangeInput(event)}
+                        error={deskripsiError}
+                        helperText="Maksimal 120 karakter"
                     />
                     <Autocomplete
                         name="data_id"

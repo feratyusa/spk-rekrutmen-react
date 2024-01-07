@@ -80,6 +80,7 @@ const CaraPenggunaan = () => {
                             <li>
                                 Minimal memiliki 2 kriteria
                             </li>
+                            
                             <li>
                                 Isi kolom kriteria berisi berikut:
                                 <ul>
@@ -89,7 +90,7 @@ const CaraPenggunaan = () => {
                                 </ul>
                             </li>
                             <li>
-                                Ekstensi file data berupa <b>CSV (.csv)</b>
+                                Ekstensi file data berupa <b>CSV (.csv)</b> atau dapat mengunduh template berikut <Link href="../../assets/template/Template_Data_RecruiterAssistant.xlsx">Template Data</Link>.
                             </li>
                         </ol>
                     </Stack>

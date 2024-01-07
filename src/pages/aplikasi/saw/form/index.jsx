@@ -53,6 +53,7 @@ const SAWForm = () => {
         console.log(inputField)
         if(inputField.data_id === ""){
             setDataError(true)
+            console.log("Error data id null")
             return
         }
         if(!nameError && !deskripsiError && !dataError){
@@ -106,6 +107,8 @@ const SAWForm = () => {
                         variant="filled"
                         defaultValue={inputField.name}
                         onChange={(event) => handleChangeInput(event)}
+                        error={nameError}
+                        helperText="Maksimal 24 karakter"
                     />
                     <TextField
                         required
@@ -114,6 +117,8 @@ const SAWForm = () => {
                         variant="filled"
                         defaultValue={inputField.description}
                         onChange={(event) => handleChangeInput(event)}
+                        error={deskripsiError}
+                        helperText="Maksimal 120 karakter"
                     />
                     <Autocomplete
                         name="data_id"
