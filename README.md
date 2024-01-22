@@ -19,3 +19,5 @@ Teknologi: React JS dengan Material-UI
 
     Membangun aplikasi dalam mode produksi dan hasil aplikasi \
     dimasukkan ke dalam folder `build`.
+
+Backend Aplikasi: [SPK Backend](https://github.com/feratyusa/spk-rekrutmen-flask)
